@@ -21,6 +21,9 @@ library(ggplot2)
 n_turb <- vector(length = timesteps)    # Track turbine counts
 n_kites <- vector(length = timesteps)  # Track kite population
 
+n_turb[1] <- sum(turbine[,,1])
+n_kites[1] <- sum(kites[,,1])
+
 # Initialize buffer zones for turbines
 buffer <- array(FALSE, dim = c(x_dim, y_dim, timesteps))  # 3D array for buffer zones
 buffer_zone <- c(-2, -1, 0, 1, 2)
@@ -41,7 +44,7 @@ for (t in 1:(timesteps - 1)) {
   n_new <- ceiling(n_existing * turb_neu_perc)
   if (n_new > turb_neu_max) n_new <- turb_neu_max
     
-  # Place turbines near existing ones and mark buffers
+  # Place turbines near existing ones
   if (n_existing > 0) {
       for (i in 1:n_new) {
         chosen_turb <- existing_turbs[sample(1:n_existing, 1), ]
@@ -91,10 +94,10 @@ for (t in 1:(timesteps - 1)) {
     # 
     #       }
     #     }
-      }
     }
+  }
         
-    # ich würde zu erst alle turbinen setzen und dann für jede turbine einen Buffer anlegen
+  # ich würde zu erst alle turbinen setzen und dann für jede turbine einen Buffer anlegen
     
   # If no valid neighbors, skip to the next iteration
   if (nrow(valid_neighbors) == 0) next
@@ -103,10 +106,9 @@ for (t in 1:(timesteps - 1)) {
   new_turb <- valid_neighbors[sample(1:nrow(valid_neighbors), 1), ]
   turbine[new_turb$x, new_turb$y, t + 1] <- TRUE
 
-
   # Random turbine placement if new turbines are less than limit
   if (n_new < turb_neu_max) {
-    random_coords <- which(!region[, , t] & !turbine[, , t], arr.ind = TRUE)
+    random_coords <- which(!region[, , t] & !turbine[, , t] & !building_buffer[, , t], arr.ind = TRUE)
     if (nrow(random_coords) > 0) {
       n_random_turbs <- turb_neu_max - n_new
       selected_random_coords <- random_coords[sample(1:nrow(random_coords), min(n_random_turbs, nrow(random_coords))), ]
@@ -140,6 +142,7 @@ for (t in 1:(timesteps - 1)) {
     }
   }
   
+  # turbine and Buffer layer ----
   # Copy turbines to the next timestep
   turbine[, , t + 1] <- turbine[, , t] | turbine[, , t + 1]
   
@@ -157,13 +160,14 @@ for (t in 1:(timesteps - 1)) {
   N_next <- round(N_t * exp(growth_rate * (1 - N_t / carrying_capacity)))
   
   # Determine valid cells for kite placement, considering turbines + buffer + buildings
-  random_coords <- which(!region[, , t] & !turbine[, , t] & !buffer[, , t] & !building_buffer[, , t], arr.ind = TRUE)
+  random_coords <- which(!region[, , t] & !turbine[, , t] 
+                         & !buffer[, , t] & !building_buffer[, , t], arr.ind = TRUE)
+  random_coords <- matrix(random_coords, ncol = 2)
   
   # Only proceed if valid cells exist
   if (nrow(random_coords) > 0) {
     # Sample new positions for red kites
     selected_coords <- random_coords[sample(1:nrow(random_coords), min(N_next, nrow(random_coords))), ]
-    selected_coords <- matrix(selected_coords, ncol = 2)
     
     # Place red kites in the selected coordinates
     if (nrow(selected_coords) > 0) {
@@ -179,40 +183,64 @@ for (t in 1:(timesteps - 1)) {
   kites[, , t + 1] <- kites[, , t + 1] | kites[, , t]
   
   # Track population counts ---- 
-  n_turb[t + 1] <- sum(turbine[, , t + 1])
-  n_kites[t + 1] <- sum(kites[, , t + 1])
+  n_turb[t+1] <- sum(turbine[, , t + 1])
+  n_kites[t+1] <- sum(kites[, , t + 1])
 }
 
 # ----------------------------------------------------------------
 # Visualization of Results -----------------------------------------------------
 # ----------------------------------------------------------------
 par(mfrow = c(1, 1))
+
 for (t in 1:timesteps) {
   # Combine data into a data frame for plotting
   df <- data.frame(
     x = rep(1:x_dim, each = y_dim),
     y = rep(1:y_dim, times = x_dim),
+    
+    # Region / landscape
     region = as.vector(region[, , t]),
+    buffer = as.vector(buffer[, , t]), 
+    building_buffer = as.vector(building_buffer[, , t]),
+    
+    # Subjects
     turbine = as.vector(turbine[, , t]),
-    kite = as.vector(kites[, , t]),
-    buffer = as.vector(buffer[, , t])
+    kite = as.vector(kites[, , t])
   )
   
   # Create the plot with buffer zone
   p <- ggplot(df, aes(x = x, y = y)) +
     geom_tile(aes(fill = region), show.legend = FALSE) +
-    scale_fill_gradient(low = "white", high = "blue", name = "Region") +
+    # scale_fill_gradient(low = "white", high = "blue", name = "Region") +
+    # Region / landscape
+    geom_point(data = subset(df, buffer == TRUE), aes(x = x, y = y), color = "orange", size = 1, shape = 15) +
+    geom_point(data = subset(df, building_buffer == TRUE), aes(x = x, y = y), color = "orange3", size = 1, shape = 15) +
+    geom_point(data = subset(df, region == TRUE), aes(x = x, y = y), color = "blue", size = 1, shape = 15) +
+
+    # Subjects
     geom_point(data = subset(df, turbine == TRUE), aes(x = x, y = y), color = "red", size = 2) +
     geom_point(data = subset(df, kite == TRUE), aes(x = x, y = y), color = "green", size = 2) +
-    geom_point(data = subset(df, buffer == TRUE), aes(x = x, y = y), color = "yellow", size = 1, shape = 15) +
-    labs(title = paste("Simulation at Timestep = ", t), x = "X", y = "Y") +
+    
+    labs(title = paste("Simulation at Timestep = ", t, "(T= ", n_turb[t], ", ", "K= ", n_kites[t], ")" ), x = "X", y = "Y") +
     theme_minimal()
   
   # Print the plot
   print(p)
   
-  # Pause between plots
   Sys.sleep(0.1)
 }
 
+# scatterplot
+par(mfrow = c(1,1))
 
+time <- 1:max(timesteps)
+
+plot(time, n_kites, col = "green", pch=16,
+     xlab = "timesteps", ylab = "number",
+     main = "Redkite and Turbines")
+points(time, n_turb, col = "red", pch=16)
+legend("topleft",               
+       legend = c("Redkites", "Turbines"),  
+       col = c("green", "red"),   
+       pch = 16,                  
+       pt.cex = 1.5)   
