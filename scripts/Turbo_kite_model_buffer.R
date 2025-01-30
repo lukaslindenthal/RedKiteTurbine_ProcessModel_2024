@@ -116,7 +116,7 @@ for (t in 1:(timesteps - 1)) {
     }
   }
   
-  # Buffer around all turbines:
+  # Buffer around all turbines ----
   # Get x, y coords of all trubines
   turb_coords <- which(turbine[ , , t] , arr.ind = TRUE)
   colnames(trub_coords) <- c("x", "y")
@@ -157,7 +157,7 @@ for (t in 1:(timesteps - 1)) {
   N_next <- round(N_t * exp(growth_rate * (1 - N_t / carrying_capacity)))
   
   # Determine valid cells for kite placement, considering turbines + buffer + buildings
-  random_coords <- which(!region[, , t] | !turbine[, , t] | !buffer[, , t] | !building_buffer[, , t], arr.ind = TRUE)
+  random_coords <- which(!region[, , t] & !turbine[, , t] & !buffer[, , t] & !building_buffer[, , t], arr.ind = TRUE)
   
   # Only proceed if valid cells exist
   if (nrow(random_coords) > 0) {
@@ -178,11 +178,7 @@ for (t in 1:(timesteps - 1)) {
   # Copy kites to the next timestep
   kites[, , t + 1] <- kites[, , t + 1] | kites[, , t]
   
-  # Track population counts
-  n_turb[t + 1] <- sum(turbine[, , t + 1])
-  n_kites[t + 1] <- sum(kites[, , t + 1])
-  
-  # Track population counts
+  # Track population counts ---- 
   n_turb[t + 1] <- sum(turbine[, , t + 1])
   n_kites[t + 1] <- sum(kites[, , t + 1])
 }
