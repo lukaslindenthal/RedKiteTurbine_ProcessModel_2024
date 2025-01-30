@@ -31,6 +31,9 @@ for (t in 2:timesteps) {
   # save killed kites
   coords_killed[matching_coords$x, matching_coords$y, t] <- TRUE
   
+  # set coords of killed kit to FALSE in t
+  kites[matching_coords$x, matching_coords$y, t] <- FALSE
+  
   # track number of killed kites
   n_killed[t] <- sum(kites[matching_coords$x, matching_coords$y, t-1])
   

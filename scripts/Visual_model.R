@@ -14,6 +14,7 @@ source("./scripts/kite_mortality.R")            # load tracking of killed kites 
 
 # map ----
 par(mfrow = c(1, 1))
+
 for (t in 1:timesteps) {
   # Combine data into a data frame for plotting
   df <- data.frame(
@@ -43,8 +44,8 @@ for (t in 1:timesteps) {
   
   if (t != 1){
     tit <- paste("Simulation at Timestep = ", t, 
-                 "\n T= ", n_turb[t], ", ", "K= ", n_kites[t],
-                 "\n killed K = ", n_killed[t])
+                 "\n Turb. = ", n_turb[t], ", ", "Kites = ", n_kites[t],
+                 "\n killed Kites by Turb. = ", n_killed[t])
   } else {
     tit <- paste("Inital Set-up ", t, 
                  "\n T= ", n_turb[t], ", ", "K= ", n_kites[t],
