@@ -94,39 +94,6 @@ for (i in 1:initial_kites) {
   kites[random_x[i], random_y[i], 1] <- 1
 }
 
-# ----------------------------------------------------------------
-# Initial Plot: Region and Turbines (Timestep = 1) -----------------------------
-# ----------------------------------------------------------------
-# Extract layers for timestep 1
-region_layer <- region[, , 1]
-turbine_layer <- turbine[, , 1]
-kites_layer <- kites[,,1]
-# Combine into a data frame for plotting
-df <- data.frame(
-  x = rep(1:x_dim, each = y_dim),
-  y = rep(1:y_dim, times = x_dim),
-  region = as.vector(region_layer),
-  turbine = as.vector(turbine_layer), 
-  kites = as.vector(kites_layer)
-)
-
-# Plot Region and Turbines
-p <- ggplot(df, aes(x = x, y = y)) +
-  geom_tile(aes(fill = region), show.legend = FALSE) +
-  #scale_fill_gradient(low = "white", high = "blue", name = "Region") +
-  geom_point(data = subset(df, turbine == TRUE), aes(x = x, y = y), color = "red", size = 2) +
-  geom_point(data = subset(df, kites == TRUE), aes(x = x, y = y), color = "green", size = 2) +
-  geom_point(data = subset(df, building_buffer == TRUE), aes(x = x, y = y), color = "orange3", size = 1, shape = 15) +
-  geom_point(data = subset(df, region == TRUE), aes(x = x, y = y), color = "blue", size = 1, shape = 15) +
-  
-  labs(title = paste("Initial State: Timestep = ", 1), x = "X", y = "Y") +
-  theme_minimal()
-
-# Print the plot
-print(p)
-
-
-
 
 # old structure  ----------------------------------------------------------
 

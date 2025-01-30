@@ -19,9 +19,9 @@ source("./scripts/Turbo_region_parameter_setting.R") # load from Parameter Inita
 # Initialize Variables for Tracking Results ------------------------------------
 # ----------------------------------------------------------------
 
+# Tracking variables
 n_turb <- vector(length = timesteps)    # Track turbine counts
-n_kites <- vector(length = timesteps)  # Track kite population
-
+n_kites <- vector(length = timesteps)   # Track kite population
 n_turb[1] <- sum(turbine[,,1])
 n_kites[1] <- sum(kites[,,1])
 
@@ -157,6 +157,7 @@ for (t in 1:(timesteps - 1)) {
   # Track population counts ---- 
   n_turb[t+1] <- sum(turbine[, , t + 1])
   n_kites[t+1] <- sum(kites[, , t + 1])
+  
 }
 
 
