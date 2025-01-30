@@ -13,11 +13,12 @@
 # Dependecies ----
 library(dplyr)
 library(ggplot2)
-
+source("./scripts/Turbo_region_parameter_setting.R") # load from Parameter Initalize Code
 
 # ----------------------------------------------------------------
 # Initialize Variables for Tracking Results ------------------------------------
 # ----------------------------------------------------------------
+
 n_turb <- vector(length = timesteps)    # Track turbine counts
 n_kites <- vector(length = timesteps)  # Track kite population
 
