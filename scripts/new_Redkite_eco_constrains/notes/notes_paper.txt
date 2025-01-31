@@ -1,0 +1,93 @@
+notes: 
+Schaub, M. (2012). Spatial distribution of wind turbines is crucial for the survival of red kite populations. Biological Conservation, 155, 111-118. https://doi.org/10.1016/j.biocon.2012.06.021
+
+model base: 
+"a number of red kite females is randomly distributed in a given area. Each kite is characterised by the coordinates of its nest in the area. Within this area, there is a core area in which a number of wind turbines is randomly distributed. The fringe area is included to model dispersal from the core area. Each year the kites produce fledglings which disperse. Each kite is subject to baseline mortality and to an additional mortality due to the collision of wind turbines. Turbine-induced mortality depends on the distance between a kite nest and a turbine. The variables estimated from an increasing red kite population in Switzerland (Aebischer and Schaub, unpubl. data)"
+
+Redkites:
+- randomly kite nest locations were generated in an area of 100 × 100 km (10,000 km2
+- minimal inter-nest distance of 2 km. !This distance represents a typical nearest-neighbour distance in Switzerland
+- The total area over which kites were distributed was larger by a buffer of 25 km around the core area containing wind turbines > include emigration from and immigration
+- generation of wind turbine and kite nest locations was independent of each other. I monitored the simulated kite population just before the start of the breeding season (pre-breeding census) and distinguished between three age classes: 1 year old, 2 years old, and older than 2 years old. The initial number of kites in each of the three age classes was 102, 70 and 250, respectively.
+- ratio of these numbers corresponds to the stable age distribution (calculated as the right eigenvector of the matrix projection model, see below) of a red kite population in Switzerland and assumes a density of 2.5 breeding pairs per 100 km2. This density is relatively low for red kites (Aebischer, 2009).
+- The risk–distance function plays a crucial role for the mortality risk of a kite and thus likely is very important for population dynamics. In order to study the sensitivity of kite population growth to the assumed risk–distance function, I used five different varieties of a basic function. All of them were negative exponential functions, but with different intercepts and slopes. The variation of the intercepts mainly changes the collision risk when the distance between the kite nest and the turbine is very low, while the variation of the slope mainly changes the collision risk at larger distances. 
+
+Turbines:
+- ramdomly core area of 50 × 50 km (2500 km2)
+- minimal distance between two turbines was at least 5 km
+
+######################
+notes:
+Nachtigall, W. (2008). Der Rotmilan (Milvus milvus, L. 1758) in Sachsen und Südbrandenburg-Untersuchungen zu Verbreitung und Ökologie (Doctoral dissertation, Universitäts-und Landesbibliothek Sachsen-Anhalt).
+
+Kapitel: 1.2.3 Das Vorkommen des Rotmilans in Sachsen in den 1990er Jahren
+- Die gesamtsächsische mittlere Abundanz erreichte im Kartierzeitraum 5,2 Brutpaare / 100 km², 
+- in kleineren Teilgebieten jetzt sogar 18,8 Brutpaare / 100 km² (380 km² Agrarraum nordöstlich Leipzig).  
+- Auf naturräumlicher Ebene wurden Dichten bis 12,1 Brutpaare / 100 km² erreicht, 
+- in den kleineren Anteilen z. B. der Elsterwerda-Herzberger-Elsterniederung sogar bis 17,1 Brutpaare / 100 km²
+
+Kapitel: 1.2.4 Das Vorkommen des Rotmilans in Sachsen im Jahr 2000
+-  In einzelnen Naturräumen wurden 
+im Erfassungsjahr 2000 als Maximalwerte bis zu 12,5 Brutpaare / 100 km² erreicht
+
+Kapitel: Der Einfluss der Landnutzung auf Dichte und Habitatwahl des Rotmilans
+- Im Mittel setzen sich fast 90 % der Umgebung eines 
+Nestes aus den drei Landschaftsanteilen Acker, Grünland und Wald zusammen
+- . Die Regionen bzw. Naturräume Sachsens mit den höchsten 
+Rotmilandichten sind die agrarisch geprägten Landschaftsteile
+
+
+Kapitel:  2.3.1 Abundanz und Dispersion
+- Nichtsdestotrotz sind die großräumigen Dichten 
+auch in Deutschland um ein Vielfaches geringer und betragen im Bezug auf die gesamte Bundesrepublik 
+(357.000 km²) und die aktuelle Bestandserhebung aus dem Jahr 2000 mit 10314-12825 Brutpaaren (Fr a n z 
+& Ho r M a n n 2003) knapp über 3 Brutpaare / 100 km².
+
+-> !sehr variierend!
+-> sehr abhängig von den Landtypen!
+
+- Der Rotmilan ist eine Greifvogelart des Offenlandes und erreicht im deutschen Vorkommensgebiet hohe Dich
+ten vor allem in landwirtschaftlich geprägten Gebieten mit hohen Anteilen der flächenhaften Landnutzung an 
+Ackerflächen.
+
+- Der Rotmilan gilt als fakultativer Koloniebrüter, der wie der verwandte Schwarzmilan 
+- lockere Brutgemeinschaften bilden kann 2-5 Paaren mit Nestabständen von 200 bis 300 m bildeten, bei geringsten 
+Abständen von 50 m
+
+-  mittleren Nestabstände in der „Normallandschaft“ liegen  sC H n e i d e r et al. (1987) in Hessen einen mittleren Abstand von 4000 m, kürzeste Entfernung 1500 m
+
+Kapitel: 2.3.2 Brutplätze und Brutbeginn
+-  Bruten in den drei Brutplatztypen Wald, Feldgehölz und 
+Baumreihen statt, Siedlungsbruten wurden nicht bekannt
+
+Kapitel: 2.3.3 Habitatwahl und Bruterfolg
+- Die Bruterfolgsrate und die Anzahl flügger Jungvögel pro Brutpaar sind als Reproduktionsparameter von vielen Faktoren abhängig.
+			
+- Deutschland 1987-2002 Brutefolgsrate = 79,  Fortpflanzungsziffern= 1,70 (1,5-2,0) MaMMen & stubbe (2003)
+- Bruterfolgsraten (Anteil von Nestern mit mindestens einem flüggen Jungvogel an der Gesamtzahl der Nester mit Eiablage) und Fortpflanzungsziffern (Junge je begonnene Brut)
+
+-  Korsica 1996-1999 eier:2,44 (96), pull. 1,77 (97), juv 1,33 (221) (einizige vollständige daten
+-  Mittelwerte von Gelegegrößen (Eier), geschlüpften Jungen (pull.) und flüggen Jungvögeln (juv.)
+
+Kapitel: 3.2.1 Die Raumnutzung adulter Rotmilane im Brutgebiet
+- Während der Versorgung und Betreuung der Jungen 
+wurden Flüge bis in maximale Entfernungen von 4,5 km registriert
+
+- Aktionsraum F: ♀ 3,2 km² und m: ♂ 10,5 km² - adulten Rotmilane Gesamtgebiete von 9,4 km²
+
+Kapitel:  3.2.2 Die Habitatnutzung adulter Rotmilane im Brutgebiet
+- Aktivitäten finden vor allem im Offenland statt.
+
+Kapitel:   3.3.2 Aktionsraumgrößen im Vergleich mit Literaturangaben und anderen Greifvogelarten
+- mittlere Aktionsraumgröße (Median) betrug dabei 9,4 km² mit einer Spanne von 2,9 bis 21,2 km² bei der Berechnung des Gesamtraumbedarfs (MCP) bzw. 4,2 km² mit einer Spanne von 1,0 bis 5,6 km² bei der Berechnung des Raumes mit intensiverer Anwesenheit (KHR)
+
+Kapitel:  6.3.3 Dismigration / Dispersal
+-  Nach Erreichen der vollen Flugfähigkeit und dem Aufenthalt in der direkten Brutplatzumgebung beginnt nach einer gewissen Zeit der Abzug von den Geburtsplätzen. Diese sich anschließende Phase ist die Zeit der Dismigration. Heute versteht man darunter sowohl die Zerstreuungswanderung der Jungen von ihrem Geburtsort zum ersten Brutort („natal dispersal“, Ansiedlung) als auch den Brutortswechsel adulter Vögel („breeding dispersal“, Umsiedlung).
+
+Kapitel:  6.3.5 Ansiedler
+- Mit dem Ablauf der Jugenddismigration und dem Erreichen der Geschlechtsreife treten die immaturen Vögel in den potentiellen Brutbestand ein. Die Geschlechtsreife kann beim Rotmilan mit Ablauf des ersten Lebensjahres (also im 2. Kalenderjahr) eintreten, es wurden aber auch Vögel nachgewiesen, die erst in ihrem 8. Kalenderjahr erstmals brüteten 
+-Die 22 Ansiedler aus dieser Studie siedelten sich im Mittel 20,5 km von ihren 
+Geburtsorten an, Männchen 8,7 km (Spanne 1-20 km) und Weibchen 34,9 km (Spanne 5-224 km)
+
+Überlebensrate: Ostdeutschland sC H ö n F e l d (1984)
+- 1Jahr: 55%, >1Jahr: 84%

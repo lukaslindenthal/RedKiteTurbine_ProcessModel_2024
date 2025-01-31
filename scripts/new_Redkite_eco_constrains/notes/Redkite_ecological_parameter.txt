@@ -1,0 +1,80 @@
+Redkite ecological parameter
+
+# simplifications ----
+- elevetion irgnored
+- landscapetype ignored - highly correlated to landscape type (90%)!
+- Brutgemeinschaften / Nesteabstand = irgnored
+- Annahme, dass Rotmilan sich im nächsten Jahr fortplanzen kann
+- nur Aktionsraum in Adultem zustand beachtet
+- vereinfachte risk-distance relationship
+- approx. for other all parameter!
+
+##############################
+# sources ----
+Nachtigall, W. (2008). Der Rotmilan (Milvus milvus, L. 1758) in Sachsen und Südbrandenburg-Untersuchungen zu Verbreitung und Ökologie (Doctoral dissertation, Universitäts-und Landesbibliothek Sachsen-Anhalt).
+
+Schaub, M. (2012). Spatial distribution of wind turbines is crucial for the survival of red kite populations. Biological Conservation, 155, 111-118.
+##############################
+
+pair / 100km [Nachtigall, W. (2008)]
+average 3 pairs / 100 km² (DE 2000) and 12,5 pairs / 100 km² (Sachsen 2000) 
+kleineren Teilgebieten jetzt sogar 18,8 Brutpaare / 100 km² (Sachsen 1990)
+
+
+Brutgemeinschaften [Nachtigall, W. (2008)]
+- locker: 2-5 pairs, distance 200 bis 300 m (min 50 m)
+- mittel: „Normallandschaft“ = median: 4000 m, min: 1500 m (sC H n e i d e r et al. (1987))
+
+Brutplatz: [Nachtigall, W. (2008)]
+- nicht in Siedlung!
+
+Bruterfolgsrate: [Nachtigall, W. (2008)]
+- Deutschland 1987-2002 Brutefolgsrate = 79,  Fortpflanzungsziffern= 1,70 (1,5-2,0) MaMMen & stubbe (2003)
+- Bruterfolgsraten (Anteil von Nestern mit mindestens einem flüggen Jungvogel an der Gesamtzahl der Nester mit Eiablage) und Fortpflanzungsziffern (Junge je begonnene Brut)
+
+Überlebensrate: [Nachtigall, W. (2008)]
+- 1Jahr: 55%, >1Jahr: 84% (Ostdeutschland sC H ö n F e l d (1984))
+
+Lebenserwartung [wiki]
+# liv_expec <- 12 # fortpflanzfähige Lebenserwartung ca 12 dh nest besteht 12 Jahre
+#
+# ein mal Brutzeit pro Jahr, also pro timestep
+
+
+Raumnutzung/ Aktionsraum: [Nachtigall, W. (2008)]
+- während Brut: maximale Entfernungen von 4,5 km
+- nach Brut: mittlere Aktionsraumgröße (Median) betrug dabei 9,4 km²
+
+Sterberate an Trubine/ risk distance relationship: [Schaub (2012)]
+r = exp(-0.2 - dist)
+
+Dismigration / Dispersal: [Nachtigall, W. (2008)]
+- Geschlechtsreife kann beim Rotmilan mit Ablauf des ersten Lebensjahres oder bis 8 Jahre! 
+- Neuansiedlung im mittel 20,5km von Geburtsort
+
+
+#################################
+# Parameter setting ----
+inital_abundance <- 3*2	 	# [3 pairs / 100km2]
+max_abundance <- 19*2		# [18.5 pairs / 100km2]
+
+nest_dist <- c(4000, 1500) 	# median, min [m]
+
+if kites[x,y,t] 
+== (region | buffer = Ture) 
+--> False 			# Brutplatz nicht in Siedlung oder Nähe
+
+prod_n <- 1.7 			# Fortpflanzungsziffern (Junge je begonnene Brut)
+prod_rate <- 0.79		# Bruterfolgsraten (Anteil von Nestern mit mind. einem flüggen Jungvogel an der Gesamtzahl der Nester mit Eiablage)
+
+action_area <- 9.5 		# Aktionsraum [9,4 km²]
+
+surv_r_1 <- 0.55		# Überlebensrate bis 1Jahr
+surv_r_a <- 0.84		# Überlebensrate > 1Jahr = adult
+if distance(kite, trubine) < actions_area 
+r_d_real <- exp((-0.2)-dis)	# risk distance relationship: tod an Trubine, wenn Turbine innerhalb Aktionsraumes
+
+liv_expec <- 12 # fortpflanzfähige Lebenserwartung ca 12 dh nest besteht 12 Jahre
+
+ein mal Brutzeit pro Jahr, also pro timestep
+#################################
