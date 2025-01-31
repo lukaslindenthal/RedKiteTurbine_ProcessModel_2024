@@ -62,5 +62,14 @@ This project requires R and the following libraries:
 - Add additional ecological constraints for red kite population dynamics.
 - Explore the impact of increased turbine density on red kite mortality rates.
 
+### notes from review to work on 
+von ELENA 
+"Ich verstehe nicht ganz das Turbine Placement:
+- Es gibt die for-Schleife von 1:n_new, in der die neuen Turbinen in der Nähe von bestehenden Turbinen platziert werden. Wenn keine gültigen Koordinaten gefunden werden, wird die Iteration abgebrochen und die Turbine wird gar nicht platziert.
+- -Danach kommt das „Random turbine placement“ unter der Bedingung, dass n_new nicht 1 ist (und das ist ja sehr wahrscheinlich) und es noch freie Plätze gibt
+-Dann wird eine Zufallszahl zwischen n_new und turb_neu_max generiert und diese Anzahl an Turbinen wird dann zufällig platziert – das heißt, es gibt dann am Ende meistens mehr neue Turbinen als die Anzahl n_new erstmal glauben lässt?"
+
+von ANNE
+„Fehler in selected_random_coords[i, 1] : Indizierung außerhalb der Grenzen (bei Veränderung der Timesteps)“
 
 
