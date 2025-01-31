@@ -118,9 +118,9 @@ for (t in 1:(timesteps - 1)) {
   # --------------------------------------------------------------
   # Red Kite Dynamics
   # --------------------------------------------------------------
-  t <- 1
+
   source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R") # load redkites initial set up
-  
+  t <- 1
   # 1 age of kites and nest increased ----
   # and
   # check if kite or nest will die, age > liv_exp
@@ -172,14 +172,27 @@ for (t in 1:(timesteps - 1)) {
   # which(kites[,,t+1, "age_lonely"] > liv_exp, arr.ind = TRUE)
 
  
-  
   # 2 movement of all lonely adults (age_lonely >= 3) ----
   coords_adults <- which(kites[ , , t+1, "age_lonely"] >= 3 , arr.ind = TRUE)
   n_adults <- nrow(coords_adults)
   
   # to check "abundance" before and after
   check_abund <- sum(kites[ , , t+1, "abundance"]) # 387
-
+  
+  # idea to fix bug 
+  # Ensures kites forming nests are removed only after processing all kites
+  # it has to be out side of the loop, otherwise its not stored 
+  # nesting_kites <- c()
+  # # Store index for removal **outside the loop**
+  # nesting_kites <- c(nesting_kites, i)
+  # # **Remove all kites that formed nests from coords_adults**
+  # if (length(nesting_kites) > 0) {
+  #   coords_adults <- coords_adults[-nesting_kites, , drop = FALSE]
+  #   # Update number of adults after removal
+  #   n_adults <- nrow(coords_adults)
+  
+  # split into two loops 1 for the nest formation, one for the dispersal
+    
   if (n_adults>0){
     
     for (i in 1:n_adults) {
@@ -214,6 +227,39 @@ for (t in 1:(timesteps - 1)) {
           new_x == row[1] && new_y == row[2]
         })
       }
+      
+      # check if new coords is matching with other adult coord
+      # get new_coords_adults
+      new_coords_adults <- which(kites[ , , t+1, "age_lonely"] >= 3 , arr.ind = TRUE)
+      check_if_kite <- apply(new_coords_adults, 1, function(row) {
+        new_x == row[1] && new_y == row[2]
+      })
+      if(any(check_if_kite)){
+        # if true creat nest 
+        
+        # average age
+        age_moving <- kites[coords_adults[i,1], coords_adults[i,2] , t+1, "age_lonely"] # current age
+        age_partner <- kites[new_x[[1]], new_y[[1]] , t+1, "age_lonely"] # current age partner
+        age <- mean(age_partner+age_moving)
+        
+        # creat new nest (nest, age, abundance)
+        kites[new_x[[1]], new_y[[1]] , t+1, "nest"] <- 1
+        kites[new_x[[1]], new_y[[1]] , t+1, "age_nest"] <- age
+        kites[new_x[[1]], new_y[[1]] , t+1, "abundance"] <- 2
+        
+        # remove moving from old location
+        kites[coords_adults[i,1], coords_adults[i,2] , t+1, "age_lonely"] <- 0 # moving kite
+        kites[coords_adults[i,1], coords_adults[i,2] , t+1, "abundance"] <- 0
+        
+        # remove partner from location
+        kites[new_x[[1]], new_y[[1]] , t+1, "age_lonely"] <- 0 # moving kite
+        
+        # remove coords from coords_adults
+        row_rm <- which(check_if_kite, arr.ind = TRUE)
+        coords_adults <- coords_adults[-row_rm,]
+        n_adults <- nrow(coords_adults)
+      }
+      
       
       # check if within boundaries
       if (new_x >= 1 && new_x <= x_dim && new_y >= 1 && new_y <= y_dim) {
@@ -250,7 +296,7 @@ for (t in 1:(timesteps - 1)) {
         kites[coords_adults[i, 1], coords_adults[i, 2], t + 1, "abundance"] <- 0
       
       }
-      if(sum(kites[ , , t+1, "abundance"])!= check_abund) break
+      #if(sum(kites[ , , t+1, "abundance"])!= check_abund) break
       print(paste("index:",i))
       print(paste(sum(kites[ , , t+1, "abundance"]), check_abund))
       print(paste("new", new_x, new_y))
