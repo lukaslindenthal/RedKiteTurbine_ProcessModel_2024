@@ -42,6 +42,7 @@
 # ! 1 Junge pro nest
 # ! ein mal Brutzeit pro Jahr, also pro timestep
 # ! Distanz zwischen nesten = random nr zwischen (4000 an 1500)
+# ! age of nest will be the medium of the the two kites
 # #################################
 
 # Dependencies ----
@@ -77,7 +78,7 @@ liv_exp <- 12    # Lebenserwartung ca 12 dh nest besteht 12-rep_age Jahre
 
 # Abundance
 initial_adults <- (3*2) * (area/100)		# [3 pairs / 100km2] + random number
-initial_lonely <-  initial_adults*0.1
+initial_lonely <-  initial_adults*0.10
 initial_new_born   # inital new born, dependent on nr of nests (num_nests/2) * growth_rate
 
 # fällt weg, wenn resolution 10km x 10km
@@ -85,8 +86,14 @@ initial_new_born   # inital new born, dependent on nr of nests (num_nests/2) * g
 # nest_dist_min <- 1.5	 # nest distance min [km] (1500m)
 
 # Dispersal
-dispersal_rad <- -1:1 		# da resolution = 10km x 10km 
-# Aktionsraum [9,4 km²] / Dispersal-radius
+# 21 km Radius der Dispersal nach geschlechstreife 
+# da resolution = 10km x 10km --> 2 gridcells
+# all possible moves within a distance of 2 grid cells
+dispersal <- expand.grid(dx = -2:2, dy = -2:2)
+# exclude center 
+ex <- which((dispersal[,1] == 0) & (dispersal[,2] == 0), arr.ind = TRUE)
+dispersal <- dispersal[-ex,]
+
 
 # turbine risk-distance realationship
 # r_d_real <- exp((-0.2)-dis)	# risk distance relationship: tod an Trubine, wenn Turbine innerhalb Aktionsraumes
@@ -96,7 +103,7 @@ dispersal_rad <- -1:1 		# da resolution = 10km x 10km
 kites_nest <- array(FALSE, dim = c(x_dim, y_dim, timesteps)) # placment of nest
 kites_juv <- array(FALSE, dim = c(x_dim, y_dim, timesteps)) # number of new born kites
 kites_abund <- array(0, dim = c(x_dim, y_dim, timesteps))  # total abundance red kites
-kites_age <- array(0, dim = c(x_dim, y_dim, timesteps))  # age lonely red kites, dies if > 12
+kites_age <- array(0, dim = c(x_dim, y_dim, timesteps))  # age lonely red kites, juv are countet hier as well, dies if > 12
 kites_age_nest <- array(0, dim = c(x_dim, y_dim, timesteps))  # age nest, dies if > 12
 
 
