@@ -101,8 +101,8 @@ for (t in 1:(timesteps - 1)) {
     y <- turb_coords[i, 2]
     
     # new buffer Coords
-    for (dx in buffer_offsets) {
-      for (dy in buffer_offsets) {
+    for (dx in buffer_zone) {
+      for (dy in buffer_zone) {
         new_x <- x + dx
         new_y <- y + dy
         
