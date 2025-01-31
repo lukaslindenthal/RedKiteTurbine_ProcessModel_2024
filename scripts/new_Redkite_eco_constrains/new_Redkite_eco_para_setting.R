@@ -230,63 +230,63 @@ if (lonely_kite > 0){
   }
 }
 
-####
-# plot for check ----
-t <- 1
-# Combine data into a data frame for plotting
-df <- data.frame(
-  x = rep(1:x_dim, each = y_dim),
-  y = rep(1:y_dim, times = x_dim),
-
-  # Region / landscape
-  region = as.vector(region[, , t]),
-  building_buffer = as.vector(building_buffer[, , t]),
-
-  # turbine
-  turb = as.vector(turbine[, , t]),
-  buffer = as.vector(buffer[, , t]),
-
-  # redkite
-  nest = as.vector(kites[, , t, "nest"]),
-  juv_kite = as.vector(kites[, , t, "juv"] > 0),
-  lonely_kite = as.vector(kites[, , t, "abundance"] == 1)
-)
-
-# categories
-df$category[df$building_buffer == TRUE] <- "Building Buffer"
-df$category[df$region == TRUE] <- "Region / Building"
-
-df$category[df$turb == TRUE] <- "Turbine"
-df$category[df$buffer == TRUE] <- "Turbine Buffer"
-
-df$category[df$nest == TRUE] <- "Redkite nest (2 adults)"
-df$category[df$juv_kite == TRUE] <- "Redkite nest (2 adults + 1-2 juv)"
-df$category[df$lonely_kite == TRUE] <- "Redkite lonely adult"
-df$category[is.na(df$category)] <- "Background"
-
-# titel
-tit <- paste("Inital Set-up ", t,
-             "\n T= ", sum(turbine[, , t]),
-              ", \n K_nest= ", sum(kites[, , t, "nest"]),
-               ", \n K_abund= ", sum(kites[, , t, "abundance"]),
-             ", K_juv=", sum(kites[, , t, "juv"]))
-
-
-p <- ggplot(df, aes(x = x, y = y)) +
-  geom_tile(aes(fill = category), show.legend = TRUE) +
-  scale_fill_manual(values = c("Turbine Buffer" = "orange2",
-                               "Building Buffer" = "orange",
-                               "Region / Building" = "blue",
-                               "Turbine" = "black",
-                               "Redkite nest (2 adults)" = "green4",
-                               "Redkite nest (2 adults + 1-2 juv)" = "green",
-                               "Redkite lonely adult" = "yellow",
-                               "Background" = "grey95"),
-                    name = "Legend") +
-  labs(title = tit,
-       x = "X", y = "Y") +
-  theme_minimal()
-print(p)
+# ####
+# # plot for check ----
+# t <- 1
+# # Combine data into a data frame for plotting
+# df <- data.frame(
+#   x = rep(1:x_dim, each = y_dim),
+#   y = rep(1:y_dim, times = x_dim),
+# 
+#   # Region / landscape
+#   region = as.vector(region[, , t]),
+#   building_buffer = as.vector(building_buffer[, , t]),
+# 
+#   # turbine
+#   turb = as.vector(turbine[, , t]),
+#   buffer = as.vector(buffer[, , t]),
+# 
+#   # redkite
+#   nest = as.vector(kites[, , t, "nest"]),
+#   juv_kite = as.vector(kites[, , t, "juv"] > 0),
+#   lonely_kite = as.vector(kites[, , t, "abundance"] == 1)
+# )
+# 
+# # categories
+# df$category[df$building_buffer == TRUE] <- "Building Buffer"
+# df$category[df$region == TRUE] <- "Region / Building"
+# 
+# df$category[df$turb == TRUE] <- "Turbine"
+# df$category[df$buffer == TRUE] <- "Turbine Buffer"
+# 
+# df$category[df$nest == TRUE] <- "Redkite nest (2 adults)"
+# df$category[df$juv_kite == TRUE] <- "Redkite nest (2 adults + 1-2 juv)"
+# df$category[df$lonely_kite == TRUE] <- "Redkite lonely adult"
+# df$category[is.na(df$category)] <- "Background"
+# 
+# # titel
+# tit <- paste("Inital Set-up ", t,
+#              "\n T= ", sum(turbine[, , t]),
+#               ", \n K_nest= ", sum(kites[, , t, "nest"]),
+#                ", \n K_abund= ", sum(kites[, , t, "abundance"]),
+#              ", K_juv=", sum(kites[, , t, "juv"]))
+# 
+# 
+# p <- ggplot(df, aes(x = x, y = y)) +
+#   geom_tile(aes(fill = category), show.legend = TRUE) +
+#   scale_fill_manual(values = c("Turbine Buffer" = "orange2",
+#                                "Building Buffer" = "orange",
+#                                "Region / Building" = "blue",
+#                                "Turbine" = "black",
+#                                "Redkite nest (2 adults)" = "green4",
+#                                "Redkite nest (2 adults + 1-2 juv)" = "green",
+#                                "Redkite lonely adult" = "yellow",
+#                                "Background" = "grey95"),
+#                     name = "Legend") +
+#   labs(title = tit,
+#        x = "X", y = "Y") +
+#   theme_minimal()
+# print(p)
 
 
 # # plot age ----
