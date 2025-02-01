@@ -21,7 +21,7 @@ set.seed(42)
 # Simulation Dimensions and Time Steps -----------------------------------------
 # ----------------------------------------------------------------
 timesteps <- 10       # Number of timesteps in the simulation
-# resolution = 10km x 10km 
+resolution <- 1 * 1 # set resoltuion [km2] 
 x_dim <- 100           # Grid width (x-axis)
 y_dim <- 100           # Grid height (y-axis)
  
