@@ -60,9 +60,10 @@ set.seed(42)
 # ----------------------------------------------------------------
 # Initialize Red Kite parameters ----
 
-area <- x_dim*y_dim # dimension of area in [km2]
+area <- x_dim*y_dim * resolution # area in [km2], dim [gridcells], resolution [km2]
+resolution_factor <- 1 / (resolution) # 1km2 <- x *(res*res)
 # resolution = 10km x 10km 
-carrying_capacity <- (19*2)* (area/100)		    # [18.5 pairs / 100km2] # Carrying capacity (K)
+carrying_capacity <- (19*2)* (area/100)    # [18.5 pairs / 100km2] # Carrying capacity (K)
 
 # growth and survival rate
 prod_n <- 2 			# Fortpflanzungsziffern (Junge je begonnene Brut)
@@ -77,23 +78,21 @@ surv_r_a <- 0.84		# Überlebensrate > 1Jahr = adult
 liv_exp <- 12    # Lebenserwartung ca 12 dh nest besteht 12-rep_age Jahre
 
 # Abundance
-initial_adults <- (3*2) * (area/100)		# [3 pairs / 100km2] + random number
+initial_adults <- (3*2) * (area/100) # [3 pairs / 100km2] 
 initial_lonely <-  initial_adults*0.10
-initial_new_born   # inital new born, dependent on nr of nests (num_nests/2) * growth_rate
+initial_new_born <-  (initial_adults/2) * growth_rate# inital new born, dependent on nr of nests (num_nests) * growth_rate
 
-# fällt weg, wenn resolution 10km x 10km
 # # Nest distance 
-# nest_dist_min <- 1.5	 # nest distance min [km] (1500m)
+# nest_dist_min <- 2 * resolution_factor	 # nest distance min [km] (1500m ~ 2000m)
 
 # Dispersal
-# 21 km Radius der Dispersal nach geschlechstreife 
-# da resolution = 10km x 10km --> 2 gridcells
-# all possible moves within a distance of 2 grid cells
-dispersal <- expand.grid(dx = -2:2, dy = -2:2)
+# within ~20 km Radius der Dispersal nach geschlechstreife 
+# all possible moves within a distance of 20 grid cells
+dis_num <- 20 * resolution_factor
+dispersal <- expand.grid(dx = -dis_num:dis_num, dy = -dis_num:dis_num)
 # exclude center 
 ex <- which((dispersal[,1] == 0) & (dispersal[,2] == 0), arr.ind = TRUE)
 dispersal <- dispersal[-ex,]
-
 
 # turbine risk-distance realationship
 # r_d_real <- exp((-0.2)-dis)	# risk distance relationship: tod an Trubine, wenn Turbine innerhalb Aktionsraumes
