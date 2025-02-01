@@ -44,7 +44,11 @@
 # ! Distanz zwischen nesten = random nr zwischen (4000 an 1500)
 # ! age of nest will be the medium of the the two kites
 # #################################
-
+####
+#open questions
+# check if resolution set up makes senes?
+# max distance of nest?
+########
 # Dependencies ----
 source("./scripts/new_Redkite_eco_constrains/utiles/utiles_func.R") # load help functions
 source("./scripts/new_Redkite_eco_constrains/new_Time_Dim_Turbo_Region_para_setting.R") # load timesteps, dim and Turbine
