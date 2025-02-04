@@ -50,7 +50,6 @@
 # max distance of nest?
 ########
 # Dependencies ----
-source("./scripts/new_Redkite_eco_constrains/utiles/utiles_func.R") # load help functions
 source("./scripts/new_Redkite_eco_constrains/new_Time_Dim_Turbo_Region_para_setting.R") # load timesteps, dim and Turbine
 
 library(ggplot2)
@@ -70,24 +69,24 @@ resolution_factor <- 1 / (resolution) # 1km2 <- x *(res*res)
 carrying_capacity <- (19*2)* (area/100)    # [18.5 pairs / 100km2] # Carrying capacity (K)
 
 # growth and survival rate
-prod_n <- 2 			# Fortpflanzungsziffern (Junge je begonnene Brut)
+# prod_n <- 2 			# Fortpflanzungsziffern (Junge je begonnene Brut)
+prod_n <- 1
 prod_rate <- 0.79		# Bruterfolgsraten (Anteil von Nestern mit mind. einem flüggen Jungvogel an der Gesamtzahl der Nester mit Eiablage)
 growth_rate <- prod_rate  # Growth rate (r in Ricker equation)
 
 rep_age <- 3 # Reproduction age 
 
-# chance of survival 
-surv_r_1 <- 0.55		# Überlebensrate bis 1Jahr
-surv_r_a <- 0.84		# Überlebensrate > 1Jahr = adult
+# # chance of survival 
+# surv_r_1 <- 0.55		# Überlebensrate bis 1Jahr
+# surv_r_a <- 0.84		# Überlebensrate > 1Jahr = adult
+
+# Lebenserwartung
 liv_exp <- 12    # Lebenserwartung ca 12 dh nest besteht 12-rep_age Jahre
 
 # Abundance
 initial_adults <- (3*2) * (area/100) # [3 pairs / 100km2] 
 initial_lonely <-  initial_adults*0.10
-initial_new_born <-  (initial_adults/2) * growth_rate# inital new born, dependent on nr of nests (num_nests) * growth_rate
-
-# # Nest distance 
-# nest_dist_min <- 2 * resolution_factor	 # nest distance min [km] (1500m ~ 2000m)
+initial_new_born <-  (initial_adults/2) * growth_rate # inital new born, dependent on nr of nests (num_nests) * growth_rate
 
 # Dispersal
 # within ~20 km Radius der Dispersal nach geschlechstreife 
@@ -98,8 +97,7 @@ dispersal <- expand.grid(dx = -dis_num:dis_num, dy = -dis_num:dis_num)
 ex <- which((dispersal[,1] == 0) & (dispersal[,2] == 0), arr.ind = TRUE)
 dispersal <- dispersal[-ex,]
 
-# turbine risk-distance realationship
-# r_d_real <- exp((-0.2)-dis)	# risk distance relationship: tod an Trubine, wenn Turbine innerhalb Aktionsraumes
+# kites dies if it enters buffer zone of turbine
 
 # 4D array to save, for kites: ----
 # Coordinates of, nests, juvenils, the abundance and age
@@ -120,7 +118,7 @@ dimnames(kites) <- list(
 )
 # print(dim(kites))
 # dimnames(kites)$type
-# kites[,,,"abundance"]
+# kites[,,t,"abundance"]
 
 
 ##############
@@ -186,8 +184,7 @@ if (nrow(random_coords) > 0) {
   }
 }
 
-# change abundance for nests & new born ----
-# and add 1-2 new born to random chosen nests
+# change abundance for nests ----
 # and change age - in nests age > 3, new_born set to 1
 coords_nest <- which(kites[,,1,"nest"] == 1, arr.ind = TRUE)
 for (i in 1:nrow(coords_nest)){
@@ -213,7 +210,7 @@ for (i in 1:nrow(coords_juv)) {
 
 }
 
-# # Verify the total number of new borns
+# Verify the total number of new borns
 sum(kites[,,1, "juv"]) == initial_new_born
 
 # placment of lonely kit, if exist ----
@@ -240,63 +237,63 @@ if (lonely_kite > 0){
   }
 }
 
-# ####
-# # plot for check ----
-# t <- 1
-# # Combine data into a data frame for plotting
-# df <- data.frame(
-#   x = rep(1:x_dim, each = y_dim),
-#   y = rep(1:y_dim, times = x_dim),
-# 
-#   # Region / landscape
-#   region = as.vector(region[, , t]),
-#   building_buffer = as.vector(building_buffer[, , t]),
-# 
-#   # turbine
-#   turb = as.vector(turbine[, , t]),
-#   buffer = as.vector(buffer[, , t]),
-# 
-#   # redkite
-#   nest = as.vector(kites[, , t, "nest"]),
-#   juv_kite = as.vector(kites[, , t, "juv"] > 0),
-#   lonely_kite = as.vector(kites[, , t, "abundance"] == 1)
-# )
-# 
-# # categories
-# df$category[df$building_buffer == TRUE] <- "Building Buffer"
-# df$category[df$region == TRUE] <- "Region / Building"
-# 
-# df$category[df$turb == TRUE] <- "Turbine"
-# df$category[df$buffer == TRUE] <- "Turbine Buffer"
-# 
-# df$category[df$nest == TRUE] <- "Redkite nest (2 adults)"
-# df$category[df$juv_kite == TRUE] <- "Redkite nest (2 adults + 1-2 juv)"
-# df$category[df$lonely_kite == TRUE] <- "Redkite lonely adult"
-# df$category[is.na(df$category)] <- "Background"
-# 
-# # titel
-# tit <- paste("Inital Set-up ", t,
-#              "\n T= ", sum(turbine[, , t]),
-#               ", \n K_nest= ", sum(kites[, , t, "nest"]),
-#                ", \n K_abund= ", sum(kites[, , t, "abundance"]),
-#              ", K_juv=", sum(kites[, , t, "juv"]))
-# 
-# 
-# p <- ggplot(df, aes(x = x, y = y)) +
-#   geom_tile(aes(fill = category), show.legend = TRUE) +
-#   scale_fill_manual(values = c("Turbine Buffer" = "orange2",
-#                                "Building Buffer" = "orange",
-#                                "Region / Building" = "blue",
-#                                "Turbine" = "black",
-#                                "Redkite nest (2 adults)" = "green4",
-#                                "Redkite nest (2 adults + 1-2 juv)" = "green",
-#                                "Redkite lonely adult" = "yellow",
-#                                "Background" = "grey95"),
-#                     name = "Legend") +
-#   labs(title = tit,
-#        x = "X", y = "Y") +
-#   theme_minimal()
-# print(p)
+####
+# plot for check ----
+t <- 1
+# Combine data into a data frame for plotting
+df <- data.frame(
+  x = rep(1:x_dim, each = y_dim),
+  y = rep(1:y_dim, times = x_dim),
+
+  # Region / landscape
+  region = as.vector(region[, , t]),
+  building_buffer = as.vector(building_buffer[, , t]),
+
+  # turbine
+  turb = as.vector(turbine[, , t]),
+  buffer = as.vector(buffer[, , t]),
+
+  # redkite
+  nest = as.vector(kites[, , t, "nest"]),
+  juv_kite = as.vector(kites[, , t, "juv"] > 0),
+  lonely_kite = as.vector(kites[, , t, "abundance"] == 1)
+)
+
+# categories
+df$category[df$building_buffer == TRUE] <- "Building Buffer"
+df$category[df$region == TRUE] <- "Region / Building"
+
+df$category[df$turb == TRUE] <- "Turbine"
+df$category[df$buffer == TRUE] <- "T-Buffer"
+
+df$category[df$nest == TRUE] <- "Redkite nest (2 adults)"
+df$category[df$juv_kite == TRUE] <- "Redkite nest (2 adults + 1-2 juv)"
+df$category[df$lonely_kite == TRUE] <- "Redkite lonely adult"
+df$category[is.na(df$category)] <- "Background"
+
+# titel
+tit <- paste("Inital Set-up ", t,
+             "\n T= ", sum(turbine[, , t]),
+              ", \n K_nest= ", sum(kites[, , t, "nest"]),
+               ", \n K_abund= ", sum(kites[, , t, "abundance"]),
+             ", K_juv=", sum(kites[, , t, "juv"]))
+
+
+p <- ggplot(df, aes(x = x, y = y)) +
+  geom_tile(aes(fill = category), show.legend = TRUE) +
+  scale_fill_manual(values = c("Turbine" = "black",
+                                "T-Buffer" = "orange2",
+                               "Building Buffer" = "orange",
+                               "Region / Building" = "blue",
+                               "Redkite nest (2 adults)" = "green4",
+                               "Redkite nest (2 adults + 1-2 juv)" = "green",
+                               "Redkite lonely adult" = "yellow",
+                               "Background" = "grey95"),
+                    name = "Legend") +
+  labs(title = tit,
+       x = "X", y = "Y") +
+  theme_minimal()
+print(p)
 
 
 # # plot age ----

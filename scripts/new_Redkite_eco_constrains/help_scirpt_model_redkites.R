@@ -5,7 +5,7 @@
 # Dependecies ----
 library(dplyr)
 library(ggplot2)
-source("./scripts/new_Redkite_eco_constrains/utiles/utiles_func.R") # load help functions
+
 source("./scripts/new_Redkite_eco_constrains/new_Time_Dim_Turbo_Region_para_setting.R") # load timesteps, dim and Turbine
 source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R") # load redkites initial set up
 
@@ -26,102 +26,104 @@ kites_nest[1] <- sum(kites[,,1, "nest"])
 # ----------------------------------------------------------------
 # Main Simulation Loop ---------------------------------------------------------
 # ----------------------------------------------------------------
-for (t in 1:(timesteps - 1)) {
-  
-  # --------------------------------------------------------------
-  # Turbine Construction
-  # --------------------------------------------------------------
-  # Get existing turbine positions
-  existing_turbs <- which(turbine[, , t], arr.ind = TRUE)
-  n_existing <- nrow(existing_turbs)
-  
-  # Calculate number of new turbines to add
-  n_new <- ceiling(n_existing * turb_neu_perc)
-  if (n_new > turb_neu_max) n_new <- turb_neu_max
-  
-  ## Place turbines near existing ones 
-  if (n_existing > 0) {
-    for (i in 1:n_new) {
-      chosen_turb <- existing_turbs[sample(1:n_existing, 1), ]
-      x <- chosen_turb[1]
-      y <- chosen_turb[2]
-      
-      # Skip placement if next to building
-      if (building_buffer[x, y, t]) next
-      
-      # Find valid neighboring cells
-      potential_neighbors <- expand.grid(
-        x + c(-1, 0, 1),
-        y + c(-1, 0, 1)
-      )
-      colnames(potential_neighbors) <- c("x", "y")
-      
-      # # Filter valid neighbors
-      valid_neighbors <- potential_neighbors %>%
-        filter(x >= 1 & x <= x_dim, y >= 1 & y <= y_dim) %>%
-        filter(!apply(., 1, function(coord) {
-          turbine[coord[1], coord[2], t] | region[coord[1], coord[2], t] | building_buffer[coord[1], coord[2], t]
-        }))
-    }
-  }
-  
-  # If no valid neighbors, skip to the next iteration
-  if (nrow(valid_neighbors) == 0) next
-  
-  # Randomly select a valid neighbor
-  new_turb <- valid_neighbors[sample(1:nrow(valid_neighbors), 1), ]
-  turbine[new_turb$x, new_turb$y, t + 1] <- TRUE
-  
-  # Random turbine placement if new turbines are less than limit
-  if (n_new < turb_neu_max) {
-    random_coords <- which(!region[, , t] & !turbine[, , t] & !building_buffer[, , t], arr.ind = TRUE)
-    if (nrow(random_coords) > 0) {
-      n_random_turbs <- turb_neu_max - n_new
-      selected_random_coords <- random_coords[sample(1:nrow(random_coords), min(n_random_turbs, nrow(random_coords))), ]
-      for (i in 1:nrow(selected_random_coords)) {
-        turbine[selected_random_coords[i, 1], selected_random_coords[i, 2], t + 1] <- TRUE
-      }
-    }
-  }
-  
-  # Buffer around all turbines ----
-  # Get x, y coords of all trubines
-  turb_coords <- which(turbine[ , , t] , arr.ind = TRUE)
-  colnames(trub_coords) <- c("x", "y")
-  
-  # Creat buffer Coordinates
-  for (i in 1:nrow(turb_coords)) {
-    x <- turb_coords[i, 1]  
-    y <- turb_coords[i, 2]
-    
-    # new buffer Coords
-    for (dx in buffer_offsets) {
-      for (dy in buffer_offsets) {
-        new_x <- x + dx
-        new_y <- y + dy
-        
-        # Ensure the new coordinates are within bounds
-        if (new_x >= 1 && new_x <= x_dim && new_y >= 1 && new_y <= y_dim) {
-          buffer[new_x, new_y, t] <- TRUE
-        }
-      }
-    }
-  }
-  
-  # turbine and Buffer layer ----
-  # Copy turbines to the next timestep
-  turbine[, , t + 1] <- turbine[, , t] | turbine[, , t + 1]
-  
-  # Copy buffer to the next timestep
-  buffer[, , t + 1] <- buffer[, , t] | buffer[, , t + 1]
-  
-  # --------------------------------------------------------------
-  # Red Kite Dynamics
-  # --------------------------------------------------------------
+# for (t in 1:(timesteps - 1)) {
+#   
+#   # --------------------------------------------------------------
+#   # Turbine Construction
+#   # --------------------------------------------------------------
+#   # Get existing turbine positions
+#   existing_turbs <- which(turbine[, , t], arr.ind = TRUE)
+#   n_existing <- nrow(existing_turbs)
+#   
+#   # Calculate number of new turbines to add
+#   n_new <- ceiling(n_existing * turb_neu_perc)
+#   if (n_new > turb_neu_max) n_new <- turb_neu_max
+#   
+#   ## Place turbines near existing ones 
+#   if (n_existing > 0) {
+#     for (i in 1:n_new) {
+#       chosen_turb <- existing_turbs[sample(1:n_existing, 1), ]
+#       x <- chosen_turb[1]
+#       y <- chosen_turb[2]
+#       
+#       # Skip placement if next to building
+#       if (building_buffer[x, y, t]) next
+#       
+#       # Find valid neighboring cells
+#       potential_neighbors <- expand.grid(
+#         x + c(-1, 0, 1),
+#         y + c(-1, 0, 1)
+#       )
+#       colnames(potential_neighbors) <- c("x", "y")
+#       
+#       # # Filter valid neighbors
+#       valid_neighbors <- potential_neighbors %>%
+#         filter(x >= 1 & x <= x_dim, y >= 1 & y <= y_dim) %>%
+#         filter(!apply(., 1, function(coord) {
+#           turbine[coord[1], coord[2], t] | region[coord[1], coord[2], t] | building_buffer[coord[1], coord[2], t]
+#         }))
+#     }
+#   }
+#   
+#   # If no valid neighbors, skip to the next iteration
+#   if (nrow(valid_neighbors) == 0) next
+#   
+#   # Randomly select a valid neighbor
+#   new_turb <- valid_neighbors[sample(1:nrow(valid_neighbors), 1), ]
+#   turbine[new_turb$x, new_turb$y, t + 1] <- TRUE
+#   
+#   # Random turbine placement if new turbines are less than limit
+#   if (n_new < turb_neu_max) {
+#     random_coords <- which(!region[, , t] & !turbine[, , t] & !building_buffer[, , t], arr.ind = TRUE)
+#     if (nrow(random_coords) > 0) {
+#       n_random_turbs <- turb_neu_max - n_new
+#       selected_random_coords <- random_coords[sample(1:nrow(random_coords), min(n_random_turbs, nrow(random_coords))), ]
+#       for (i in 1:nrow(selected_random_coords)) {
+#         turbine[selected_random_coords[i, 1], selected_random_coords[i, 2], t + 1] <- TRUE
+#       }
+#     }
+#   }
+#   
+#   # Buffer around all turbines ----
+#   # Get x, y coords of all trubines
+#   turb_coords <- which(turbine[ , , t] , arr.ind = TRUE)
+#   colnames(trub_coords) <- c("x", "y")
+#   
+#   # Creat buffer Coordinates
+#   for (i in 1:nrow(turb_coords)) {
+#     x <- turb_coords[i, 1]  
+#     y <- turb_coords[i, 2]
+#     
+#     # new buffer Coords
+#     for (dx in buffer_offsets) {
+#       for (dy in buffer_offsets) {
+#         new_x <- x + dx
+#         new_y <- y + dy
+#         
+#         # Ensure the new coordinates are within bounds
+#         if (new_x >= 1 && new_x <= x_dim && new_y >= 1 && new_y <= y_dim) {
+#           buffer[new_x, new_y, t] <- TRUE
+#         }
+#       }
+#     }
+#   }
+#   
+#   # turbine and Buffer layer ----
+#   # Copy turbines to the next timestep
+#   turbine[, , t + 1] <- turbine[, , t] | turbine[, , t + 1]
+#   
+#   # Copy buffer to the next timestep
+#   buffer[, , t + 1] <- buffer[, , t] | buffer[, , t + 1]
+#   
+#   # --------------------------------------------------------------
+#   # Red Kite Dynamics
+#   # --------------------------------------------------------------
+source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R") # load redkites initial set up
+t <- 1
 
-  source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R") # load redkites initial set up
-  t <- 1
-  # 1 age of kites and nest increased ----
+  # 1 mortality 1 - Kites getötet durhc turbien bau (von buffer/turbie´ne getroffen) [Lukas]
+
+  # 2 age of kites and nest increased ----
   # and
   # check if kite or nest will die, age > liv_exp
   # nest
@@ -137,6 +139,7 @@ for (t in 1:(timesteps - 1)) {
       if (new_age > liv_exp) {
         kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "age_nest"] <- 0
         juv <- kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "juv"]
+        
         # nests dies but juvenile survives
         if (juv > 0 ) {
           kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "abundance"] <- 1
@@ -172,7 +175,7 @@ for (t in 1:(timesteps - 1)) {
   # which(kites[,,t+1, "age_lonely"] > liv_exp, arr.ind = TRUE)
 
  
-  # 2 movement of all lonely adults (age_lonely >= 3) ----
+  # 3 movement of all lonely adults (age_lonely >= 3) ----
   coords_adults <- which(kites[ , , t+1, "age_lonely"] >= 3 , arr.ind = TRUE)
   n_adults <- nrow(coords_adults)
   
@@ -228,6 +231,10 @@ for (t in 1:(timesteps - 1)) {
         })
       }
       
+      # idea: alle bewegen sich, coord wird abgespeichert
+      # check ob es doppelter coord gibt (dh ob zwei nach bewegenung aufeinander getroffen sind)
+      # wenn ja bilden sie ein nest
+      
       # check if new coords is matching with other adult coord
       # get new_coords_adults
       new_coords_adults <- which(kites[ , , t+1, "age_lonely"] >= 3 , arr.ind = TRUE)
@@ -260,8 +267,8 @@ for (t in 1:(timesteps - 1)) {
         n_adults <- nrow(coords_adults)
       }
       
-      
       # check if within boundaries
+      # migration = immigration
       if (new_x >= 1 && new_x <= x_dim && new_y >= 1 && new_y <= y_dim) {
         # set (age_lonely & abundance) to new location 
         age <- kites[coords_adults[i,1], coords_adults[i,2] , t+1, "age_lonely"] # current age
@@ -304,12 +311,31 @@ for (t in 1:(timesteps - 1)) {
     }
   }
   
-  print(paste(coords_adults[i+1, 1], coords_adults[i+1, 2]))
+  # movement lonely kites [Neele]
   
-  # 3 Reproduction ----
+  # 4 mortality 2 - die kites die in schon gebaute trubine wandern sterben [Neele]
+  # lonely kites sterben wenn sie in turibe/buffer rein fliegen 
+  # wenn neue turb gebaut wird sterben nester/lonely kites wenn sie dort sind
+  # siehe /kite_mortality.R, muss modifiziert werden
+  # zuerst turbinen platzieren 
   
+  # 5 Reproduction ---- [Lukas]
+  # alle nester reporduzieren mit 0.79 (growth rate) (auch die neu gebildeten)
+  # nester die schon ein juv haben, kein neues 
   
-
+    # reproduction mit ricker-function
+    # growth_rate und carrying_capacity sind in new_redkite_eco_para.R definiert
+    # N_next <- round(N_t * exp(growth_rate * (1 - N_t / carrying_capacity)))
+    
+    # kites[, , t+1, "nest"]
+    # kites[, , t+1, "juv"]
+    # kites[, , t+1, "abundance"]
+    
+  # 6 visual as extra .R file 
+  # siehe /visual_model.R muss modifiziert werden
+  # in new_redkite_eco_para.R unten Versuch zu ploten
+    
+##### 
 #   old code
 #   # Current kite population
 #   kite_abund <- kites[, , t, "abundance"]

@@ -122,7 +122,7 @@ for (t in 1:(timesteps - 1)) {
   # Buffer around all turbines ----
   # Get x, y coords of all trubines
   turb_coords <- which(turbine[ , , t] , arr.ind = TRUE)
-  colnames(trub_coords) <- c("x", "y")
+  colnames(turb_coords) <- c("x", "y")
   
   # Creat buffer Coordinates
   for (i in 1:nrow(turb_coords)) {
