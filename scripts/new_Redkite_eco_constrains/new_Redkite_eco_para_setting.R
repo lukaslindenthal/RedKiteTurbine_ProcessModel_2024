@@ -202,9 +202,9 @@ coords_juv <- coords_nest[sample(1:nrow(coords_nest), min(inital_new_born, nrow(
 for (i in 1:nrow(coords_juv)) {
   # Add the corresponding number of new borns to each nest
   kites[coords_juv[i,1], coords_juv[i,2], 1, "juv"] <-  TRUE
-  kites[coords_juv[i,1], coords_juv[i,2], 1, "age_lonely"] <-  1 # new kites age
+  kites[coords_juv[i,1], coords_juv[i,2], 1, "age_lonely"] <-  smaple(1:rep_age-1, 1) # new kites age, between new born and almost adult
 
-  #add adult abundance per nest
+  #add juv abundance per nest
   kites[coords_juv[i,1], coords_juv[i,2], 1, "abundance"] <- 
     kites[coords_juv[i,1], coords_juv[i,2], 1, "abundance"] + 1
 
