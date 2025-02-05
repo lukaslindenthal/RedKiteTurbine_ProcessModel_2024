@@ -106,15 +106,15 @@ kites_juv <- array(FALSE, dim = c(x_dim, y_dim, timesteps)) # number of new born
 kites_abund <- array(0, dim = c(x_dim, y_dim, timesteps))  # total abundance red kites
 kites_age <- array(0, dim = c(x_dim, y_dim, timesteps))  # age lonely red kites, juv are countet hier as well, dies if > 12
 kites_age_nest <- array(0, dim = c(x_dim, y_dim, timesteps))  # age nest, dies if > 12
+kites_killed_turb <- array(0, dim = c(x_dim, y_dim, timesteps)) # killed kites/nest by turbine 
 
-
-kites <- abind(kites_nest, kites_juv, kites_abund, kites_age, kites_age_nest, along = 4)
+kites <- abind(kites_nest, kites_juv, kites_abund, kites_age, kites_age_nest, kites_killed_turb, along = 4)
 # Add dimension names for clarity
 dimnames(kites) <- list(
   x_dim = NULL,
   y_dim = NULL,
   timesteps = NULL,
-  type = c("nest", "juv", "abundance", "age_lonely","age_nest")
+  type = c("nest", "juv", "abundance", "age_lonely", "age_nest", "killed_turb")
 )
 # print(dim(kites))
 # dimnames(kites)$type
@@ -237,63 +237,83 @@ if (lonely_kite > 0){
   }
 }
 
+########### check
 ####
+241
+
 # plot for check ----
+
 t <- 1
-# Combine data into a data frame for plotting
+
+# Combine data into a data frame for plotting 
+
+
 df <- data.frame(
+
   x = rep(1:x_dim, each = y_dim),
   y = rep(1:y_dim, times = x_dim),
-
+  
   # Region / landscape
   region = as.vector(region[, , t]),
   building_buffer = as.vector(building_buffer[, , t]),
-
+  
   # turbine
   turb = as.vector(turbine[, , t]),
   buffer = as.vector(buffer[, , t]),
-
+  
   # redkite
   nest = as.vector(kites[, , t, "nest"]),
   juv_kite = as.vector(kites[, , t, "juv"] > 0),
   lonely_kite = as.vector(kites[, , t, "abundance"] == 1)
+
 )
 
 # categories
 df$category[df$building_buffer == TRUE] <- "Building Buffer"
+
 df$category[df$region == TRUE] <- "Region / Building"
 
 df$category[df$turb == TRUE] <- "Turbine"
+
 df$category[df$buffer == TRUE] <- "T-Buffer"
 
 df$category[df$nest == TRUE] <- "Redkite nest (2 adults)"
+
 df$category[df$juv_kite == TRUE] <- "Redkite nest (2 adults + 1-2 juv)"
+
 df$category[df$lonely_kite == TRUE] <- "Redkite lonely adult"
+
 df$category[is.na(df$category)] <- "Background"
 
 # titel
+
 tit <- paste("Inital Set-up ", t,
              "\n T= ", sum(turbine[, , t]),
-              ", \n K_nest= ", sum(kites[, , t, "nest"]),
-               ", \n K_abund= ", sum(kites[, , t, "abundance"]),
+             ", \n K_nest= ", sum(kites[, , t, "nest"]),
+             ", K_lonely= ", sum(kites[, , t, "age_lonely"] >=3),
+             ", \n K_abund= ", sum(kites[, , t, "abundance"]),
              ", K_juv=", sum(kites[, , t, "juv"]))
 
-
 p <- ggplot(df, aes(x = x, y = y)) +
-  geom_tile(aes(fill = category), show.legend = TRUE) +
-  scale_fill_manual(values = c("Turbine" = "black",
-                                "T-Buffer" = "orange2",
-                               "Building Buffer" = "orange",
-                               "Region / Building" = "blue",
-                               "Redkite nest (2 adults)" = "green4",
-                               "Redkite nest (2 adults + 1-2 juv)" = "green",
-                               "Redkite lonely adult" = "yellow",
-                               "Background" = "grey95"),
-                    name = "Legend") +
-  labs(title = tit,
-       x = "X", y = "Y") +
-  theme_minimal()
+geom_tile(aes(fill = category), show.legend = TRUE) +
+scale_fill_manual(values = c("Turbine" = "black",
+                             "T-Buffer" = "orange2",
+                             "Building Buffer" = "orange",
+                             "Region / Building" = "blue",
+                             "Redkite nest (2 adults)" = "green4",
+                             "Redkite nest (2 adults + 1-2 juv)" = "green",
+                             "Redkite lonely adult" = "yellow",
+                             "Background" = "grey95"),
+
+                  name = "Legend") +
+
+labs(title = tit,
+     x = "X", y = "Y") +
+theme_minimal()
+
+
 print(p)
+
 
 
 # # plot age ----
