@@ -1,0 +1,76 @@
+-----------------
+Redkite model (second part in model script)
+-----------------
+1. mortality 1
+2. ageing of kites and nest 
+3. movement of all lonely adults & new nest building & mortality 2
+4. Reproduction
+
+#############################################################
+Explanation of 1. mortality 1 
+#############################################################
+# Kites getötet durch Turbinenbau (von buffer/Turbine getroffen)
+
+#############################################################
+Explanation of 2. ageing of kites and nest 
+#############################################################
+
+juv = juveniles 
+
+# get nests and juv of t 
+# icrease age_nest + 1 and for juv increas age_lonely +1
+
+# get lonely adults (age_lonely >= 3) 
+# increase age_lonely
+
+#############################################################
+Explanation of 3. movement of all lonely adults & new nest building & mortality 2
+#############################################################
+# 3 movement of all lonely adults (age_lonely >= 3) and new nest building ----
+  
+# 3.1 assigne new coordinates and save them 
+  # 3.1.1 generate new coords, get random direction from dispersal 
+  # 3.1.2 check if new coords are on nest 
+  # 3.1.3 check if within boundaries (and if coords not match with nest)
+  
+# 3.2 mortality 2 & new nets & placment of new_coords 
+	
+  # 3.2.1 mortality 2, check if new coords are in turbine/buffer, if true - killed
+	# mortality 2 = kites die if they fly into turbine/buffer
+
+  # 3.2.2 new nest if two kites meet
+  # 3.2.3 movement of rest (set age, abundance at new coords)
+
+#############################################################
+Explanation of 4. Reproduction:
+#############################################################
+
+Eligibility:
+	- The code first selects nests that are active ("nest" == TRUE) and have not reproduced in the current cycle ("juv" == FALSE).
+    	- (Note: we somehow need a part in the code that resets the "juv" flag for nests when the juvs are older than 3 I guess)
+
+
+Density-Dependence:
+The Ricker:
+
+avg_offspring_per_nest <- exp(growth_rate * (1 - N_t / carrying_capacity))
+
+gets an “effective” average number of juveniles per nest that adjusts for the total number of reproducing nests.
+
+Per-Nest Reproduction:
+	- If average is less than 1,  nest reproduces with that probability (producing one juvenile if successful).
+    	- If average is 1 or higher, the nest gets one juvenile for sure, and then two extra independent chances to add up to two more juvs (total and max = 3)
+
+Integration:
+section updates hte kites array for the next timestep (t+1) by adding new juvs to the abundance at that nest and setting the "juv" flag so the nest won’t reproduce again immediately.
+
+----------------
+changes: 
+
+- changed t to t+1, movement/new nest building and aging already happend
+
+- in movement just one juv is moving, so i would set offspring number to 1, otherwise we need extra layers
+------------
+
+#############################################################
+model - end
