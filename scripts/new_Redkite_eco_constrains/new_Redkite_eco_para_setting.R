@@ -243,7 +243,7 @@ if (lonely_kite > 0){
 
 # plot for check ----
 
-t <- 2
+t <- 1
 
 # Combine data into a data frame for plotting 
 

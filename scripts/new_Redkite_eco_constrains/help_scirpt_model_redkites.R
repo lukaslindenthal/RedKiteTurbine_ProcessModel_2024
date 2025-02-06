@@ -119,7 +119,8 @@ source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R") # 
 # Red Kite Dynamics ----
 source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R") # load redkites initial set up
 t <- 1
-for (t in 1:(timesteps - 1)) {
+
+#for (t in 1:(timesteps - 1)) {
   # 1 mortality 1 - Kites getötet durch Turbinenbau (von buffer/Turbine getroffen) [Lukas] ----
 
   # 2 age of kites and nest increased ----
@@ -193,7 +194,16 @@ for (t in 1:(timesteps - 1)) {
     }
     }
   
-  # which(kites[,,t+1, "age_lonely"] > liv_exp, arr.ind = TRUE)
+  # juveniles t+1
+  coords_juv<- which(kites[, , t+1, "age_lonely"] < rep_age & kites[, , t+1, "age_lonely"] < 0 , arr.ind = TRUE) # check for lonely kites + juv
+  num_juv <- nrow(coords_juv)
+  if (num_juv > 0){
+    for (i in 1:num_juv) {
+      kites[coords_juv[i,1],coords_juv[i,2],t+1, "juv"] <- 1 
+      
+    }
+  }
+  # sum(kites[,,t,"age_lonely"] < rep_age & kites[,,t,"age_lonely"] > 0)
   
   # check 
   # to check "abundance" before and after aging
@@ -577,36 +587,36 @@ for (t in 1:(timesteps - 1)) {
   } # inital checking if lonely kites exist
   
   # 4 Reproduction of kites ---- 
-  # alle nester reporduzieren mit 0.79 (growth rate) (auch die neu gebildeten)
-  # nester die schon ein juv haben, kein neues 
-  # (we need to insert  after mortality/aging and before dispersal at timestep t+1 I think)
-  
-  # Let's look for eligible=geeignete nests
-  # active nests (TRUE in the "nest" layer)
-  # and have not yet reproduced (FALSE in the "juv" layer).
-  eligible_nests <- which(kites[,,t+1, "nest"] == 1 & kites[,,t+1, "juv"] == 0, arr.ind = TRUE)
-  N_t <- nrow(eligible_nests)
-  
-  if (N_t > 0) {
-    # growth rate and nest density
-    reproduction_probability <- exp(growth_rate * (1 - N_t / carrying_capacity))
-    
-    # loop each of the eligable nest
-    for (i in 1:N_t) {
-      
-      # every nest has one juv or none (based on reproduction probability)
-      if (runif(1) < reproduction_probability) {
-        x_coord <- eligible_nests[i, 1]
-        y_coord <- eligible_nests[i, 2]
-        
-        # mark nest has juv already; then DONT reproduce again directly
-        kites[x_coord, y_coord, t+1, "juv"] <- 1
-        
-        kites[x_coord, y_coord, t+1, "abundance"] <- kites[x_coord, y_coord, t+1, "abundance"] + 1
-      }
-    }
-  }
-} # end of for loop timesteps
+  # # alle nester reporduzieren mit 0.79 (growth rate) (auch die neu gebildeten)
+  # # nester die schon ein juv haben, kein neues 
+  # # (we need to insert  after mortality/aging and before dispersal at timestep t+1 I think)
+  # 
+  # # Let's look for eligible=geeignete nests
+  # # active nests (TRUE in the "nest" layer)
+  # # and have not yet reproduced (FALSE in the "juv" layer).
+  # eligible_nests <- which(kites[,,t+1, "nest"] == 1 & kites[,,t+1, "juv"] == 0, arr.ind = TRUE)
+  # N_t <- nrow(eligible_nests)
+  # 
+  # if (N_t > 0) {
+  #   # growth rate and nest density
+  #   reproduction_probability <- exp(growth_rate * (1 - N_t / carrying_capacity))
+  #   
+  #   # loop each of the eligable nest
+  #   for (i in 1:N_t) {
+  #     
+  #     # every nest has one juv or none (based on reproduction probability)
+  #     if (runif(1) < reproduction_probability) {
+  #       x_coord <- eligible_nests[i, 1]
+  #       y_coord <- eligible_nests[i, 2]
+  #       
+  #       # mark nest has juv already; then DONT reproduce again directly
+  #       kites[x_coord, y_coord, t+1, "juv"] <- 1
+  #       
+  #       kites[x_coord, y_coord, t+1, "abundance"] <- kites[x_coord, y_coord, t+1, "abundance"] + 1
+  #     }
+  #   }
+  # }
+#} # end of for loop timesteps
   
   sum(kites[,,t+1, "abundance"])
   sum(kites[,,t+1, "juv"])
