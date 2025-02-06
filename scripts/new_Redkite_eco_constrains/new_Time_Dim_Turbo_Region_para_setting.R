@@ -83,6 +83,8 @@ for (i in 1:n_turb_1) {
   # Define buffer around each building
   for (dx in buffer_zone) {
     for (dy in buffer_zone) {
+      if (dx == 0 && dy == 0) next
+      
       bx <- random_x[i] + dx
       by <- random_y[i] + dy
       if (bx >= 1 && bx <= x_dim && by >= 1 && by <= y_dim) {
