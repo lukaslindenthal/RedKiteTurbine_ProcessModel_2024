@@ -116,12 +116,11 @@ kites_nest[1] <- sum(kites[,,1, "nest"])
 #   buffer[, , t + 1] <- buffer[, , t] | buffer[, , t + 1]
 #   
 #   # --------------------------------------------------------------
-#   # Red Kite Dynamics
-#   # --------------------------------------------------------------
+#   # Red Kite Dynamics ----
 source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R") # load redkites initial set up
 t <- 1
 
-  # 1 mortality 1 - Kites getötet durhc turbien bau (von buffer/turbie´ne getroffen) [Lukas]
+  # 1 mortality 1 - Kites getötet durch Turbinenbau (von buffer/Turbine getroffen) [Lukas] ----
 
   # 2 age of kites and nest increased ----
   # and
@@ -211,7 +210,7 @@ t <- 1
     stop(paste("nr not the same after aging! t1", ab_t1, "; real t1", check_abund_before, abund_beginning))
   }
   
-  # 3 movement of all lonely adults (age_lonely >= 3) ----
+  # 3 movement of all lonely adults (age_lonely >= 3) and new nest building ----
   
   # 3.1 assigne new coordinates and save them 
   # 3.1.1 generate new coords, get random direction from dispersal 
@@ -221,7 +220,7 @@ t <- 1
   # 3.2 mortality & new nets & placment of new_coords 
   # 3.2.1 mortality 2, check if new coords are in turbine/buffer, if true - killed
   # 3.2.2 new nest if two kites meet
-  # 3.2.3 movment of rest (set age, abundance at new coords)
+  # 3.2.3 movement of rest (set age, abundance at new coords)
   
   # positions of lonely kites (age_lonely >= 3)
   coords_adults <- which(kites[ , , t+1, "age_lonely"] >= rep_age , arr.ind = TRUE)
@@ -479,7 +478,7 @@ t <- 1
                        " | before", check_abund_before))
     }
     
-    # 3.2.3 movment of rest (set age, abundance at new coords) ----
+    # 3.2.3 movement of rest lonely adult kites (set age, abundance at new coords) ----
     for(i in 1:nrow(new_coords)){
       
       # check if old coord is nest 
@@ -525,17 +524,82 @@ t <- 1
     }
   } # inital checking if lonely kites exist
   
-  # 5 Reproduction ---- [Lukas]
+  # 4 Reproduction of kites ---- 
   # alle nester reporduzieren mit 0.79 (growth rate) (auch die neu gebildeten)
   # nester die schon ein juv haben, kein neues 
+  # (we need to insert  after mortality/aging and before dispersal at timestep t+1 I think)
   
-    # reproduction mit ricker-function
-    # growth_rate und carrying_capacity sind in new_redkite_eco_para.R definiert
-    # N_next <- round(N_t * exp(growth_rate * (1 - N_t / carrying_capacity)))
+  # Let's look for eligible=geeignete nests
+  # active nests (TRUE in the "nest" layer)
+  # and have not yet reproduced (FALSE in the "juv" layer).
+  eligible_nests <- which(kites[,,t+1, "nest"] == TRUE & kites[,,t+1, "juv"] == FALSE, arr.ind = TRUE)
+  N_t <- nrow(eligible_nests)
+  
+  if (N_t > 0) {
     
-    # kites[, , t+1, "nest"]
-    # kites[, , t+1, "juv"]
-    # kites[, , t+1, "abundance"]
+    # with ricker calculate average expected offspring per nest
+    # should be density‐dependent, so considers the current numer of nests at given timestep
+    avg_offspring_per_nest <- exp(growth_rate * (1 - N_t / carrying_capacity))
+    
+    # Loop over all eligible nest and get reproduction outcome
+    for (i in 1:N_t) {
+      
+      # Init  number of juvs produced by this nest
+      juveniles_produced <- 0
+      
+      if (avg_offspring_per_nest < 1) {
+        # If  expected number < 1,  nest reproduces with probability = to avg_offspring_per_nest
+        if (runif(1) < avg_offspring_per_nest) {
+          juveniles_produced <- 1
+        }
+      } else {
+        # when expected number is 1 or greater,assigns one juvenile for sure
+        juveniles_produced <- 1
+        
+        # Determine extra reproduction potential
+        # A nest can produce a maximum of 2 extra juvs (max total of 3) 
+        extra_mean <- min(avg_offspring_per_nest - 1, 2)
+        
+        # split this extra potential into two independent chances
+        prob_extra <- extra_mean / 2
+        
+        # first extra offspring chance
+        if (runif(1) < prob_extra) {
+          juveniles_produced <- juveniles_produced + 1
+        }
+        # second extra offspring chance
+        if (runif(1) < prob_extra) {
+          juveniles_produced <- juveniles_produced + 1
+        }
+      }
+      
+      # ecological constraint; no more than three juvs (Neele paper?)
+      if (juveniles_produced > 3) juveniles_produced <- 3
+      
+      # Update nest only if reproduction occurs
+      if (juveniles_produced > 0) {
+        # Extract coordinates of current nest
+        # ATTENTION;) in the old model we use these as global variables I think
+        x_coord <- eligible_nests[i, 1]
+        y_coord <- eligible_nests[i, 2]
+        
+        # Mark nest as having produced juveniles (cant reproduce again until the juvenile ages out)
+        kites[x_coord, y_coord, t+1, "juv"] <- TRUE
+        
+        # Update the total abundance at this cell
+        #  adding new juveniles to abundance carried over from timestep t.
+        kites[x_coord, y_coord, t+1, "abundance"] <- kites[x_coord, y_coord, t, "abundance"] + juveniles_produced
+        
+        # (Optional) maybe we could track the number of juveniles separately, 
+        # with new layer (e.g., "juv_count").
+        # kites[x_coord, y_coord, t+1, "juv_count"] <- juveniles_produced 
+        # but yeah, maybe not also;)
+      }
+    }
+  }
+  
+  sum(kites[,,t+1, "abundance"])
+  sum(kites[,,t+1, "juv"])
     
   # 6 visual as extra .R file 
   # siehe /visual_model.R muss modifiziert werden
