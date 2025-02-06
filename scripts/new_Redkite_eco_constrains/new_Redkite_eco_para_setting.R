@@ -106,15 +106,16 @@ kites_juv <- array(FALSE, dim = c(x_dim, y_dim, timesteps)) # number of new born
 kites_abund <- array(0, dim = c(x_dim, y_dim, timesteps))  # total abundance red kites
 kites_age <- array(0, dim = c(x_dim, y_dim, timesteps))  # age lonely red kites, juv are countet hier as well, dies if > 12
 kites_age_nest <- array(0, dim = c(x_dim, y_dim, timesteps))  # age nest, dies if > 12
-kites_killed_turb <- array(0, dim = c(x_dim, y_dim, timesteps)) # killed kites/nest by turbine 
+kites_killed_turb <- array(0, dim = c(x_dim, y_dim, timesteps)) # killed lonely adult kites by turbine (movement/flying) (mortality 2)
+kites_killed_build <- array(0, dim = c(x_dim, y_dim, timesteps)) # killed kites/nest by turbine builded in timestep (mortality 1)
 
-kites <- abind(kites_nest, kites_juv, kites_abund, kites_age, kites_age_nest, kites_killed_turb, along = 4)
+kites <- abind(kites_nest, kites_juv, kites_abund, kites_age, kites_age_nest, kites_killed_turb, kites_killed_build, along = 4)
 # Add dimension names for clarity
 dimnames(kites) <- list(
   x_dim = NULL,
   y_dim = NULL,
   timesteps = NULL,
-  type = c("nest", "juv", "abundance", "age_lonely", "age_nest", "killed_turb")
+  type = c("nest", "juv", "abundance", "age_lonely", "age_nest", "killed_turb", "killed_build")
 )
 # print(dim(kites))
 # dimnames(kites)$type
@@ -239,11 +240,10 @@ if (lonely_kite > 0){
 
 ########### check
 ####
-241
 
 # plot for check ----
 
-t <- 1
+t <- 2
 
 # Combine data into a data frame for plotting 
 
