@@ -134,12 +134,12 @@ for (t in 1:(timesteps - 1)) {
   if (num_nests > 0){
     for (i in 1:num_nests) {
       
-      new_age <- kites[coords_nests[i,1],coords_nests[i,2], t, "age_nest"] + 1
+      new_age_nest <- kites[coords_nests[i,1],coords_nests[i,2], t, "age_nest"] + 1
       juv <- kites[coords_nests[i,1],coords_nests[i,2] , t, "juv"]
       
-      if (juv[[1]] == 0 ) {
-        
-        if (new_age[[1]] > liv_exp) {
+      if (juv[[1]] == 0 ) { 
+        # no juv
+        if (new_age_nest[[1]] > liv_exp) {
           # nests without juv dies
           kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "age_nest"] <- 0
           kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "abundance"] <- 0 
@@ -152,19 +152,20 @@ for (t in 1:(timesteps - 1)) {
         
       } else {
         # if juv exists
-         age_lonely <- kites[coords_nests[i,1],coords_nests[i,2] , t, "age_lonely"]
-        if (new_age[[1]] > liv_exp) {
+         age_juv <- kites[coords_nests[i,1],coords_nests[i,2] , t, "age_lonely"]
+         
+        if (new_age_nest[[1]] > liv_exp) {
           # nests with juv, nest dies juv survives
           kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "age_nest"] <- 0
           kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "nest"] <- 0
           kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "abundance"] <- 1 
-          kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "age_lonely"] <- age_lonely[[1]] + 1 # juv new age
+          kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "age_lonely"] <- age_juv[[1]] + 1 # juv new age
         } else {
           
           # nest + juv survives
           kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "age_nest"] <- new_age[[1]]
           kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "abundance"] <- 3 # nest still exists
-          kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "age_lonely"] <- age_lonely[[1]] + 1 # juv new age
+          kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "age_lonely"] <- age_juv[[1]] + 1 # juv new age
           kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "nest"] <- 1
         }
       }
@@ -603,69 +604,6 @@ for (t in 1:(timesteps - 1)) {
       }
     }
   }
-  
-  # if (N_t > 0) {
-  #   
-  #   # with ricker calculate average expected offspring per nest
-  #   # should be density‐dependent, so considers the current numer of nests at given timestep
-  #   avg_offspring_per_nest <- exp(growth_rate * (1 - N_t / carrying_capacity))
-  #   
-  #   # Loop over all eligible nest and get reproduction outcome
-  #   for (i in 1:N_t) {
-  #     
-  #     # Init  number of juvs produced by this nest
-  #     juveniles_produced <- 0
-  #     
-  #     if (avg_offspring_per_nest < 1) {
-  #       # If  expected number < 1,  nest reproduces with probability = to avg_offspring_per_nest
-  #       if (runif(1) < avg_offspring_per_nest) {
-  #         juveniles_produced <- 1
-  #       }
-  #     } else {
-  #       # when expected number is 1 or greater,assigns one juvenile for sure
-  #       juveniles_produced <- 1
-  #       
-  #       # Determine extra reproduction potential
-  #       # A nest can produce a maximum of 2 extra juvs (max total of 3) 
-  #       extra_mean <- min(avg_offspring_per_nest - 1, 2)
-  #       
-  #       # split this extra potential into two independent chances
-  #       prob_extra <- extra_mean / 2
-  #       
-  #       # first extra offspring chance
-  #       if (runif(1) < prob_extra) {
-  #         juveniles_produced <- juveniles_produced + 1
-  #       }
-  #       # second extra offspring chance
-  #       if (runif(1) < prob_extra) {
-  #         juveniles_produced <- juveniles_produced + 1
-  #       }
-  #     }
-  #     
-  #     # ecological constraint; no more than three juvs (Neele paper?)
-  #     if (juveniles_produced > 3) juveniles_produced <- 3
-  #     
-  #     # Update nest only if reproduction occurs
-  #     if (juveniles_produced > 0) {
-  #       # Extract coordinates of current nest
-  #       # ATTENTION;) in the old model we use these as global variables I think
-  #       x_coord <- eligible_nests[i, 1]
-  #       y_coord <- eligible_nests[i, 2]
-  #       
-  #       # Mark nest as having produced juveniles (cant reproduce again until the juvenile ages out)
-  #       kites[x_coord, y_coord, t+1, "juv"] <- TRUE
-  #       
-  #       # Update the total abundance at this cell
-  #       #  adding new juveniles to abundance carried over from timestep t.
-  #       kites[x_coord, y_coord, t+1, "abundance"] <- kites[x_coord, y_coord, t, "abundance"] + juveniles_produced
-  #       
-  #       # (Optional) maybe we could track the number of juveniles separately, 
-  #       # with new layer (e.g., "juv_count").
-  #       # kites[x_coord, y_coord, t+1, "juv_count"] <- juveniles_produced 
-  #       # but yeah, maybe not also;)
-  #     }
-  #   }
-  # }
 } # end of for loop timesteps
   
   sum(kites[,,t+1, "abundance"])
