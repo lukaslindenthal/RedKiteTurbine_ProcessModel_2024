@@ -118,7 +118,7 @@ source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R") # 
 # --------------------------------------------------------------
 # Red Kite Dynamics ----
 source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R") # load redkites initial set up
-t <- 1 
+t <- 1
 for (t in 1:(timesteps - 1)) {
   # 1 mortality 1 - Kites getötet durch Turbinenbau (von buffer/Turbine getroffen) [Lukas] ----
 
