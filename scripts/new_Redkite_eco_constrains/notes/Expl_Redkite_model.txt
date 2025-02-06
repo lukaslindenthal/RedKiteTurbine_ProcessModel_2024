@@ -9,7 +9,7 @@ Redkite model (second part in model script)
 #############################################################
 Explanation of 1. mortality 1 
 #############################################################
-# Kites getötet durch Turbinenbau (von buffer/Turbine getroffen)
+# Kites/Nester getötet durch Turbinenbau (von buffer/Turbine getroffen)
 
 #############################################################
 Explanation of 2. ageing of kites and nest 
@@ -60,7 +60,7 @@ gets an “effective” average number of juveniles per nest that adjusts for th
 
 Per-Nest Reproduction:
 	- If average is less than 1,  nest reproduces with that probability (producing one juvenile if successful).
-    	- If average is 1 or higher, the nest gets one juvenile for sure, and then two extra independent chances to add up to two more juvs (total and max = 3)
+    	- (If average is 1 or higher, the nest gets one juvenile for sure, and then two extra independent chances to add up to two more juvs (total and max = 3))
 
 Integration:
 section updates hte kites array for the next timestep (t+1) by adding new juvs to the abundance at that nest and setting the "juv" flag so the nest won’t reproduce again immediately.
@@ -72,6 +72,7 @@ section updates hte kites array for the next timestep (t+1) by adding new juvs t
 limitations: 
 
 - just 1 juv per nest (during reproduction)
+- if new nest is formed age is random (improvement would be average of both kites)
 
 ------------
 model - end
