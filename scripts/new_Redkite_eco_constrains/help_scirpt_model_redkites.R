@@ -145,7 +145,7 @@ for (t in 1:(timesteps - 1)) {
           kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "abundance"] <- 0 
         } else {
           # nest survives
-          kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "age_nest"] <- new_age[[1]]
+          kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "age_nest"] <- new_age_nest[[1]]
           kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "abundance"] <- 2 # nest still exists
           kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "nest"] <- 1
         }
@@ -163,7 +163,7 @@ for (t in 1:(timesteps - 1)) {
         } else {
           
           # nest + juv survives
-          kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "age_nest"] <- new_age[[1]]
+          kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "age_nest"] <- new_age_nest[[1]]
           kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "abundance"] <- 3 # nest still exists
           kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "age_lonely"] <- age_juv[[1]] + 1 # juv new age
           kites[coords_nests[i,1],coords_nests[i,2] , t + 1, "nest"] <- 1
@@ -464,11 +464,12 @@ for (t in 1:(timesteps - 1)) {
     duplicate_idx <- which(duplicated(new_coords) | duplicated(new_coords, fromLast = TRUE))
     dup_coords <- new_coords[duplicate_idx, ]
     
+   
+    # coords of new nests and random age of nest
+    new_coords_nest <- dup_coords[duplicated(dup_coords), ] # new x,y for nest
+    n_new_nests <- nrow(new_coords_nest)
+    
     if (length(duplicate_idx) > 0) {
-      # coords of new nests and random age of nest
-      new_coords_nest <- dup_coords[duplicated(dup_coords), ] # new x,y for nest
-      n_new_nests <- nrow(new_coords_nest)
-      
       print(paste(n_new_nests, "new nests"))
       
       for (i in 1:n_new_nests) {
@@ -515,6 +516,7 @@ for (t in 1:(timesteps - 1)) {
     } 
     
     if (sum(kites[,,t+1, "abundance"]) + n_killed == check_abund_before) {
+      
       print(paste(n_new_nests, "new nests"))
       print(paste("(after killing & nests placment)", sum(kites[,,t+1, "abundance"]),
                   ",killed:", n_killed,
@@ -563,7 +565,7 @@ for (t in 1:(timesteps - 1)) {
     }
     # 3.2.3 check abundance after movement ----
     abund_after <- sum(kites[,,t+1, "abundance"])
-    if (abund_after + n_killed == check_abund){
+    if (abund_after + n_killed == check_abund_before){
       print(paste("(after killing & nests placment & movment):", abund_after,
                   ",killed:", n_killed,
                   " | before", check_abund_before))
