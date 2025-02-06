@@ -155,27 +155,6 @@ if (nrow(random_coords) > 0) {
   # distnace check, fällt weg wenn resolution 10km x 10 km
   # also:
   selected_coords <- rbind(selected_coords, pot_coords)
-  # # check for distance
-  # for (i in 1:nrow(pot_coords)) {
-  #   # Get current candidate coordinate
-  #   candidate_coord <- pot_coords[i, ]
-  #   
-  #   # Check if this candidate is sufficiently far from all selected coordinates
-  #   if (nrow(selected_coords) == 0) {
-  #     # First coordinate, automatically select it
-  #     selected_coords <- rbind(selected_coords, candidate_coord)
-  #   } else {
-  #     # Calculate distance to all previously selected coordinates
-  #     distances <- apply(selected_coords, 1, function(existing_coord) {
-  #       calc_distance(existing_coord, candidate_coord)
-  #     })
-  #     
-  #     # If the minimum distance is greater than the max distance, accept this coordinate
-  #     if (min(distances) >= nest_dist_min) {
-  #       selected_coords <- rbind(selected_coords, candidate_coord)
-  #     }
-  #   }
-  # }
 
   # Place red kites in the selected coordinates
   if (nrow(selected_coords) > 0) {
