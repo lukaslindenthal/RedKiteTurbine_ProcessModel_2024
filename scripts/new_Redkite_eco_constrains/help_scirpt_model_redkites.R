@@ -337,8 +337,13 @@ t <- 1
           new_x == row[1] && new_y == row[2]
         })
         
+        #  Recheck if new coords are on building/ region
+        check_if_building <- apply(coords_building_buffer, 1, function(row) {
+          new_x == row[1] && new_y == row[2]
+        })
+        
         # If the new coordinates land on a nest, recalculate
-        if (any(check_if_nest)) {
+        if (any(check_if_nest) || any(check_if_building)) {
           # Recalculate new direction if landing on a nest
           row_dispersal <- sample(1:nrow(dispersal), 1)
           rand_dispersal <- dispersal[row_dispersal, ]
@@ -352,25 +357,6 @@ t <- 1
           break  # Exit the loop as coordinates are valid
         }
         
-        #  Recheck if new coords are on building/ region
-        check_if_building <- apply(coords_building_buffer, 1, function(row) {
-          new_x == row[1] && new_y == row[2]
-        })
-      
-        # If the new coordinates land on a nest, recalculate
-        if (any(check_if_building)) {
-          # Recalculate new direction if landing on a nest
-          row_dispersal <- sample(1:nrow(dispersal), 1)
-          rand_dispersal <- dispersal[row_dispersal, ]
-          dx <- rand_dispersal[1]
-          dy <- rand_dispersal[2]
-          
-          # Recalculate new coordinates
-          new_x <- coords_adults[i, 1] + dx
-          new_y <- coords_adults[i, 2] + dy
-        } else {
-          break  # Exit the loop as coordinates are valid
-        }
       }
         
       # 3.1.3 save new_coords
