@@ -62,8 +62,11 @@ for (i in 1:n_hinder_1) {
 # ----------------------------------------------------------------
 # Wind Turbine Parameters and Buffer ------------------------------------------------------
 # ----------------------------------------------------------------
-turb_neu_max <- 10     # Max turbines added per timestep
-turb_neu_perc <- 0.5   # Percentage of existing turbines for new construction
+# turb_neu_max <- 10     # Max turbines added per timestep
+# turb_neu_perc <- 0.5   # Percentage of existing turbines for new construction
+
+turb_neu_max <- 20     # Max turbines added per timestep
+turb_neu_perc <- 0.8   # Percentage of existing turbines for new construction
 
 # Initialize Wind Turbines
 turbine <- array(FALSE, dim = c(x_dim, y_dim, timesteps))  # 3D array for turbines
