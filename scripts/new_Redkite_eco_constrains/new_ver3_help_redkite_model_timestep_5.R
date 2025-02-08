@@ -77,11 +77,15 @@ for (t in 1:(timesteps - 1)) {
   # Random turbine placement if new turbines are less than limit
   if (n_new < turb_neu_max) {
     random_coords <- which(!region[, , t] & !turbine[, , t] & !building_buffer[, , t], arr.ind = TRUE)
+    
     if (nrow(random_coords) > 0) {
       n_random_turbs <- turb_neu_max - n_new
       selected_random_coords <- random_coords[sample(1:nrow(random_coords), min(n_random_turbs, nrow(random_coords))), ]
-      for (i in 1:nrow(selected_random_coords)) {
-        turbine[selected_random_coords[i, 1], selected_random_coords[i, 2], t + 1] <- TRUE
+      selected_random_coords <- matrix(selected_random_coords, ncol = 2)
+      if(nrow(selected_random_coords) > 0){
+        for (i in 1:nrow(selected_random_coords)) {
+          turbine[selected_random_coords[i, 1], selected_random_coords[i, 2], t + 1] <- TRUE
+        }
       }
     }
   }
@@ -128,8 +132,26 @@ for (t in 1:(timesteps - 1)) {
 # 
 # for (t in 1:(timesteps - 1)) {
 #   print(paste("t=", t, "& timestep= ", t+1))
-  # 1 mortality 1 - Kites getötet durch Turbinenbau (von buffer/Turbine getroffen) [Lukas] ----
   
+  # 1 mortality 1 - Kites killed by new turbine placements or buffer [Lukas] ----
+  # we run it at the beginning of each new timestep (t+1)
+  for (i in 1:x_dim) {
+    for (j in 1:y_dim) {
+      # check if turbine (or buffer) is present at cell
+      if (turbine[i, j, t] == TRUE || buffer[i, j, t] == TRUE ||
+          turbine[i, j, t+1] == TRUE || buffer[i, j, t+1] == TRUE) {
+        # number of kites that are currently in this cell as killed by building
+        kites[i, j, t+1, "killed_build"] <- kites[i, j, t, "abundance"]
+        # set abundance to zero = dead
+        kites[i, j, t+1, "abundance"] <- 0
+        # maybe this makes sense?! clear any other related state (e.g. age and nest/juv flags)
+        kites[i, j, t+1, "age_lonely"] <- 0
+        kites[i, j, t+1, "age_nest"] <- 0
+        kites[i, j, t+1, "nest"] <- 0
+        kites[i, j, t+1, "juv"] <-0
+      }
+    }
+  }
   # 2 age of kites and nest increased ----
   # and
   # check if kite or nest will die, age > liv_exp
@@ -175,7 +197,7 @@ for (t in 1:(timesteps - 1)) {
   coords_die <- which(kites[, , t+1, "age_lonely"] > liv_exp | 
                         kites[, , t+1, "age_nest"] > liv_exp, arr.ind = TRUE)
   
-  if (nrow(coords_die) > 0) {
+  if (nrow(coords_die) > 0) { # if nest dead, juvenile dies aswell
     for (i in 1:nrow(coords_die)) {
       kites[coords_die[i,1], coords_die[i,2], t+1, "age_lonely"] <- 0
       kites[coords_die[i,1], coords_die[i,2], t+1, "age_nest"] <- 0
@@ -303,22 +325,22 @@ for (t in 1:(timesteps - 1)) {
       new_y <- coords_adults[i, 2] + dy
       
       # Wrap coordinates within the grid
-      new_x <- ((new_x - 1) %% x_dim) + 1
+      new_x <- ((new_x - 1) %% x_dim) + 1 # bereich: [0, x_dim-1]
       new_y <- ((new_y - 1) %% y_dim) + 1
-      
+
       # 3.1.2: Check if new position is on a nest or building
       check_if_nest_juv <- apply(coords_nests_juv, 1, function(row) {
         new_x == row[1] && new_y == row[2]
       })
-      
+
       check_if_building <- apply(coords_building_buffer, 1, function(row) {
         new_x == row[1] && new_y == row[2]
       })
-      
+
       # 3.1.3: Try new locations if invalid
       max_attempts <- 500
       attempt <- 0
-      
+
       while ((any(check_if_nest_juv) || any(check_if_building)) && attempt < max_attempts) {
         attempt <- attempt + 1
         if (attempt >= max_attempts) {
@@ -326,28 +348,28 @@ for (t in 1:(timesteps - 1)) {
           new_y <- coords_adults[i, 2]
           break
         }
-        
+
         row_dispersal <- sample(1:nrow(dispersal), 1)
         rand_dispersal <- dispersal[row_dispersal, ]
         dx <- rand_dispersal[1]
         dy <- rand_dispersal[2]
-        
+
         new_x <- coords_adults[i, 1] + dx
         new_y <- coords_adults[i, 2] + dy
-        
+
         # Wrap around boundaries
         new_x <- ((new_x - 1) %% x_dim) + 1
         new_y <- ((new_y - 1) %% y_dim) + 1
-        
+
         check_if_nest_juv <- apply(coords_nests_juv, 1, function(row) {
           new_x == row[1] && new_y == row[2]
         })
-        
+
         check_if_building <- apply(coords_building_buffer, 1, function(row) {
           new_x == row[1] && new_y == row[2]
         })
       }
-      
+     
       # 3.1.4: Save new coordinates
       new_coords[i, ] <- c(new_x, new_y)
       
@@ -468,7 +490,6 @@ for (t in 1:(timesteps - 1)) {
     dup_coords <- new_coords[duplicate_idx, ]
 
     # if(length(duplicate_idx) %% 2 == 1 ){ # 0 = even, 1 = uneven
-    cat("3.2.2 new nest; Duplicate count is odd; removing one kite from the duplicate set.\n")
     
     # counter:
     # Count occurrences of each unique (x, y) pair
@@ -479,6 +500,7 @@ for (t in 1:(timesteps - 1)) {
     # coords n > 2
     del_row <- which(coord_counts[,3] > 2, arr.ind = TRUE)
     if(length(del_row) > 0){
+      cat("3.2.2 new nest; Duplicate count is odd; removing one kite from the duplicate set.\n")
       del_coords <- coord_counts[del_row,1:2]
       
       # get index of this coords
@@ -541,6 +563,15 @@ for (t in 1:(timesteps - 1)) {
       }
     } 
     
+    # delete killed coords from coords_adult and new_coords
+    new_coords <- new_coords[-duplicate_idx,]
+    coords_adults <- coords_adults[-duplicate_idx,]
+    
+    # reset row indices
+    rownames(new_coords) <- NULL
+    rownames(coords_adults) <- NULL
+    
+    # 3.2.2 check new nests ----
     abund_after_meeting <- sum(kites[,,t+1, "abundance"]) 
     
     if(length(duplicate_idx) %% 2 == 1 ){
@@ -550,8 +581,6 @@ for (t in 1:(timesteps - 1)) {
       abund_after_meeting_help <- sum(kites[,,t+1, "abundance"]) 
     }
     
-    
-    # 3.2.2 check new nests ----
     if(nrow(new_coords) != nrow(coords_adults)) {
       stop("3.2.2 after nest; new_coords != coords_adults")
     } 
@@ -563,7 +592,7 @@ for (t in 1:(timesteps - 1)) {
     if (abund_before_meeting == abund_after_meeting_help) {
       
       print(paste("3.2.2 after nest; ", n_new_nests, "new nests"))
-      print(paste("(after killing & nests placment)",abund_after_meeting,
+      print(paste("3.2.2 (after killing & nests placment)",abund_after_meeting,
                   ",killed:", n_killed,
                   " | before", check_abund_before))
     } else {
@@ -574,17 +603,6 @@ for (t in 1:(timesteps - 1)) {
                  " | before", check_abund_before))
     }
     
-    # reset row indices
-    rownames(new_coords) <- NULL
-    rownames(coords_adults) <- NULL
-    
-    # delete killed coords from coords_adult and new_coords
-    new_coords <- new_coords[-duplicate_idx,]
-    coords_adults <- coords_adults[-duplicate_idx,]
-    
-    # reset row indices
-    rownames(new_coords) <- NULL
-    rownames(coords_adults) <- NULL
     
     # 3.2.3 movement of rest lonely adult kites (set age, abundance at new coords) ----
     abund_before_movement <- sum(kites[,,t+1, "abundance"])
@@ -597,11 +615,16 @@ for (t in 1:(timesteps - 1)) {
         
         if(abund >= 2 ){ # recheck nest
           print("nest placement!")
+          print("set new coords")
+          print(paste("old", kites[new_coords[i,1], new_coords[i,2], t+1, "abundance"]))
+
           kites[new_coords[i,1], new_coords[i,2], t+1, "age_lonely"] <- 0
           kites[new_coords[i,1], new_coords[i,2], t+1, "age_nest"] <- sample(rep_age:(liv_exp-1), 1)
           kites[new_coords[i,1], new_coords[i,2], t+1, "nest"] <- 1
           kites[new_coords[i,1], new_coords[i,2], t+1, "abundance"] <- abund
           
+          print(paste("new", kites[new_coords[i,1], new_coords[i,2], t+1, "abundance"]))
+          print(paste("coords", new_coords[i,1], new_coords[i,2], t+1))
         } else {
           # print("set new coords")
           # print(paste("old", kites[new_coords[i,1], new_coords[i,2], t+1, "abundance"]))
@@ -614,16 +637,15 @@ for (t in 1:(timesteps - 1)) {
           # print(paste("new", kites[new_coords[i,1], new_coords[i,2], t+1, "abundance"]))
         }
         
-        
-        # delete old coords, nests remain 
+        # delete old coords, nests remain
         # print("delete old coords")
         # print(paste("old", kites[coords_adults[i,1], coords_adults[i,2], t+1, "abundance"]))
-        # 
+        #
         kites[coords_adults[i,1], coords_adults[i,2], t+1, "age_lonely"] <- 0
-        kites[coords_adults[i,1], coords_adults[i,2], t+1, "abundance"] <- 
+        kites[coords_adults[i,1], coords_adults[i,2], t+1, "abundance"] <-
           kites[coords_adults[i,1], coords_adults[i,2], t+1, "abundance"] - 1
         # print(paste("new", kites[coords_adults[i,1], coords_adults[i,2], t+1, "abundance"]))
-        
+
       }
     }
     abund_after_movement <- sum(kites[,,t+1, "abundance"])
@@ -674,7 +696,7 @@ for (t in 1:(timesteps - 1)) {
 
   if (N_t > 0) {
     # growth rate and nest density
-    reproduction_probability <- exp(growth_rate * (1 - N_t / carrying_capacity))
+    reproduction_probability <- exp(growth_rate * (1 - N_t / N_t)) # carrying_capacity
 
     # loop each of the eligable nest
     for (i in 1:N_t) {
@@ -697,10 +719,36 @@ for (t in 1:(timesteps - 1)) {
       }
     }
   }
+  
+  # final check: 
+  # t <- t+1
+  # sum(kites[,,t,"abundance"]) ==  # worked
+  #   nrow(which(kites[,,t, "age_lonely"] > 0, arr.ind = TRUE)) +
+  #  nrow(which(kites[,,t, "age_nest"] > 0, arr.ind = TRUE))*2
+  # 
+  # sum(kites[,,t,"abundance"]) == # worked
+  #   nrow(which(kites[,,t, "age_lonely"] > 0, arr.ind = TRUE)) +
+  #   nrow(which(kites[,,t, "nest"] > 0, arr.ind = TRUE))*2
+  # 
+  # sum(kites[,,t, "juv"]) == 
+  #   nrow(which(kites[,,t, "age_lonely"] > 0 &
+  #                kites[,,t, "age_lonely"] < rep_age, arr.ind = TRUE))
+  # 
+  # nrow(which(kites[,,t, "age_lonely"] > 0, arr.ind = TRUE)) == 
+  #   nrow(which(kites[,,t, "age_lonely"] >= rep_age , arr.ind = TRUE)) +
+  #   sum(kites[,,t, "juv"])
+  # 
+  # nrow(which(kites[,,t, "age_lonely"] > 12, arr.ind = TRUE)) # worked
+  # nrow(which(kites[,,t, "age_nest"] > 12, arr.ind = TRUE)) # worked
+  # 
+  # sum(kites[,,t, "abundance"])
+  
 } # end of for loop timesteps
 
-# 6 visual as extra .R file 
-# siehe /visual_model.R muss modifiziert werden
-# in new_redkite_eco_para.R unten Versuch zu ploten
+# problem wahrscheinlich bei: 
+# 3.1 new_coords assignment oder beim 3.2.2 nest placement 
+# in movement check - werden auch nester platziert
+# idee: hilfs layer für ageing/ movement (dh es wird noch nicht im echten layer platziert)
 
+# idee für anderen model aufbau, kites/ turbinen in tabelle speicher (x,y, age, etc) und dann immer über tabelle abrufen
 
