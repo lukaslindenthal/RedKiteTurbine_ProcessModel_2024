@@ -749,6 +749,8 @@ for (t in 1:(timesteps - 1)) {
 # 3.1 new_coords assignment oder beim 3.2.2 nest placement 
 # in movement check - werden auch nester platziert
 # idee: hilfs layer für ageing/ movement (dh es wird noch nicht im echten layer platziert)
+# verbesserung: final check einbauen
+# verbesserung: mehr als 5 timesteps
 
-# idee für anderen model aufbau, kites/ turbinen in tabelle speicher (x,y, age, etc) und dann immer über tabelle abrufen
+# idee: für anderen model aufbau, kites/ turbinen in tabelle speicher (x,y, age, etc) und dann immer über tabelle abrufen
 
