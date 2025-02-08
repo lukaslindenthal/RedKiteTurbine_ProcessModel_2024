@@ -14,7 +14,7 @@ source("./scripts/kite_mortality.R")            # load tracking of killed kites 
 
 # map ----
 par(mfrow = c(1, 1))
-
+timesteps <- 6
 for (t in 1:timesteps) {
   # Combine data into a data frame for plotting
   df <- data.frame(
