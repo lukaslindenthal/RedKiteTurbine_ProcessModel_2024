@@ -129,7 +129,7 @@ for (t in 1:(timesteps - 1)) {
 # source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R") # load redkites initial set up
 # library(dplyr)
 # timesteps <- 5
-# 
+
 # for (t in 1:(timesteps - 1)) {
 #   print(paste("t=", t, "& timestep= ", t+1))
   
