@@ -1,14 +1,11 @@
 # ----------------------------------------------------------------
-# Wind Turbine and Red Kite Simulation
+# Wind Turbine Parameter settings
 # ----------------------------------------------------------------
-# This script sets up the parameters and initial states for a 
-# simulation of:
-#
-# timesetup, wind turbine placement and backgroundregion
+# This script sets up the parameters (timesetup, wind turbine placement and background region)
+# and initial states for the model 
+
 # ----------------------------------------------------------------
-# init Author: Neele Haß
-# other Authors: Lukas Lindenthal
-# date: November 2024
+# Authors: Neele Haß & Lukas Lindenthal
 # ----------------------------------------------------------------
 
 # Dependencies ----
@@ -24,7 +21,7 @@ timesteps <- 5       # Number of timesteps in the simulation
 resolution <- 1 * 1 # set resoltuion [km2] 
 x_dim <- 100           # Grid width (x-axis)
 y_dim <- 100           # Grid height (y-axis)
- 
+
 # ----------------------------------------------------------------
 # Region and Obstacles ---------------------------------------------------------
 # ----------------------------------------------------------------
@@ -95,7 +92,7 @@ for (i in 1:n_turb_1) {
       }
     }
   }
-
+  
 }
 
 
