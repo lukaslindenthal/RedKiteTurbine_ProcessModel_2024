@@ -15,7 +15,7 @@ library(dplyr)
 # Source the parameter and model scripts
 source("./scripts/new_Redkite_eco_constrains/new_Time_Dim_Turbo_Region_para_setting.R")   # Loads timesteps, dimensions, turbines, etc.
 source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R")              # Loads red kite parameters and initial setup
-source("./scripts/new_Redkite_eco_constrains/ver3_copie_ver2_help_redkite_model_debugging_nest.R")
+source("./scripts/new_Redkite_eco_constrains/new_ver3_help_redkite_model_timestep_5.R")
 
 for(t in 1:timesteps){
   # Combine data into a data frame for plotting
@@ -60,7 +60,7 @@ for(t in 1:timesteps){
   
   df$category[df$killed_move == TRUE] <- "Redkite killed flying in turb"
   
-  df$category[df$killed_build == TRUE] <- "Redkite killed by turbine construction"
+  df$category[df$killed_build == TRUE] <- "Redkite killed by turbine const."
   
   df$category[is.na(df$category)] <- "Background"
   
@@ -85,7 +85,7 @@ for(t in 1:timesteps){
                                  "Redkite nest (2 adults + 1 juv)" = "green",
                                  "Redkite lonely adult" = "yellow",
                                  "Redkite killed flying in turb" = "red",
-                                 "Redkite killed by turbine construction" = "darkred",
+                                 "Redkite killed by turbine const." = "darkred",
                                  "Background" = "grey95"),
                       
                       name = "Legend") +

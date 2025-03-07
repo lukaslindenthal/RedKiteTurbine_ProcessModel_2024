@@ -211,7 +211,7 @@ if (lonely_kite > 0){
     if (nrow(selected_coords) > 0) {
       for (i in 1:nrow(selected_coords)) {
         kites[selected_coords[i, 1], selected_coords[i, 2], 1, "abundance"] <- 1
-        kites[selected_coords[i,1], selected_coords[i,2], 1, "age_lonely"] <- sample(rep_age:liv_exp, 1) 
+        kites[selected_coords[i,1], selected_coords[i,2], 1, "age_lonely"] <- sample((rep_age+1):liv_exp, 1) 
       }
     }
   }
