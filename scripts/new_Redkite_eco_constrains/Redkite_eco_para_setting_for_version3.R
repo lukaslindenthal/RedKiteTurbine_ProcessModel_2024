@@ -19,7 +19,7 @@
 # The age of a new nest is randomly set.
 
 # Dependencies ----
-source("./scripts/new_Redkite_eco_constrains/new_Time_Dim_Turbo_Region_para_setting.R") # load timesteps, dim and Turbine
+source("./scripts/new_Redkite_eco_constrains/Time_Dim_Turbo_Region_para_setting_for_version3.R") # load timesteps, dim and Turbine
 
 library(ggplot2)
 library(abind)
