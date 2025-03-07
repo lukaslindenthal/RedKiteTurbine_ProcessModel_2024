@@ -9,12 +9,14 @@
 
 # Assumptions
 # ----------------------------------------------------------------
-# Kites are assumed to reach sexual maturity at age 3.
-# Initial population estimate is 3 pairs per 100km² with an additional 10% random adults.
+# Initial population estimate is 3 pairs per 100km² with an additional 10% single adults.
 # Each nest is assumed to produce one juvenile per year.
 # Breeding occurs once per timestep/year.
-# Distance between nests is randomly set between 4000 and 1500 meters.
-# The age of a nest is averaged between the two kites.
+# Kites are assumed to reach sexual maturity at age 3, then they leave the nest.
+# The dispersal is a random distance within a radius of 20km.
+# If kites are mature and lonley they move within the dispersal distance.
+# If two mature lonely kites meet they form a new nest, and can already breed in this timestep
+# The age of a new nest is randomly set.
 
 # Dependencies ----
 source("./scripts/new_Redkite_eco_constrains/new_Time_Dim_Turbo_Region_para_setting.R") # load timesteps, dim and Turbine
