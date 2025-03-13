@@ -13,18 +13,17 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 
-<<<<<<< HEAD
 # Source the parameter and model scripts
 source("./scripts/new_Redkite_eco_constrains/new_Time_Dim_Turbo_Region_para_setting.R")   # Loads timesteps, dimensions, turbines, etc.
 source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R")              # Loads red kite parameters and initial setup
 source("./scripts/new_Redkite_eco_constrains/new_ver3_help_redkite_model_timestep_5.R")
-=======
+
 # ----------------------------------------------------------------
 # Sourcing required parameter and model scripts
 # ----------------------------------------------------------------
 source("./scripts/new_Redkite_eco_constrains/new_Time_Dim_Turbo_Region_para_setting.R")
 source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R")
->>>>>>> 79102b26d459a991c4645b71e14c14d5ba965d72
+
 
 # the following source runs the model
 source("./scripts/new_Redkite_eco_constrains/model_version3.R")
@@ -58,12 +57,9 @@ for(t in 1:timesteps) {
   df$category[df$juv_kite == TRUE] <- "Redkite nest (2 adults + 1 juv)"
   df$category[df$lonely_kite == TRUE] <- "Redkite lonely adult"
   df$category[df$killed_move == TRUE] <- "Redkite killed flying in turb"
-<<<<<<< HEAD
-  
   df$category[df$killed_build == TRUE] <- "Redkite killed by turbine const."
-=======
   df$category[df$killed_build == TRUE] <- "Redkite killed by turbine construction"
->>>>>>> 79102b26d459a991c4645b71e14c14d5ba965d72
+
   
   # Construct the title with dynamic data
   tit <- paste("Simulation at Timestep =", t,
