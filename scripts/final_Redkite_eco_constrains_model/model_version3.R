@@ -28,8 +28,8 @@ library(ggplot2)
 # ----------------------------------------------------------------
 # Sourcing required parameter and model scripts
 # ----------------------------------------------------------------
-source("./scripts/new_Redkite_eco_constrains/new_Time_Dim_Turbo_Region_para_setting.R") # load timesteps, dim and Turbine
-source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R") # load redkites initial set up
+source("./scripts/final_Redkite_eco_constrains_model/Time_Dim_Turbo_Region_para_setting_version3.R") # load timesteps, dim and Turbine
+source("./scripts/final_Redkite_eco_constrains_model/Redkite_eco_para_setting_version3.R") # load redkites initial set up
 
 # # ----------------------------------------------------------------
 # # Main Simulation Loop ---------------------------------------------------------

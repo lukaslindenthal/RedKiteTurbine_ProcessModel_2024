@@ -14,19 +14,18 @@ library(dplyr)
 library(tidyr)
 
 # Source the parameter and model scripts
-source("./scripts/new_Redkite_eco_constrains/new_Time_Dim_Turbo_Region_para_setting.R")   # Loads timesteps, dimensions, turbines, etc.
-source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R")              # Loads red kite parameters and initial setup
-source("./scripts/new_Redkite_eco_constrains/new_ver3_help_redkite_model_timestep_5.R")
+source("./scripts/final_Redkite_eco_constrains_model/Time_Dim_Turbo_Region_para_setting_version3.R")   # Loads timesteps, dimensions, turbines, etc.
+source("./scripts/final_Redkite_eco_constrains_model/Redkite_eco_para_setting_version3.R")              # Loads red kite parameters and initial setup
 
 # ----------------------------------------------------------------
 # Sourcing required parameter and model scripts
 # ----------------------------------------------------------------
-source("./scripts/new_Redkite_eco_constrains/new_Time_Dim_Turbo_Region_para_setting.R")
-source("./scripts/new_Redkite_eco_constrains/new_Redkite_eco_para_setting.R")
+source("./scripts/final_Redkite_eco_constrains_model/Time_Dim_Turbo_Region_para_setting_version3.R")   # Loads timesteps, dimensions, turbines, etc.
+source("./scripts/final_Redkite_eco_constrains_model/Redkite_eco_para_setting_version3.R")              # Loads red kite parameters and initial setup
 
 
 # the following source runs the model
-source("./scripts/new_Redkite_eco_constrains/model_version3.R")
+source("./scripts/final_Redkite_eco_constrains_model/model_version3.R")
 
 # ----------------------------------------------------------------
 # Data Preparation and Visualization for Each Timestep

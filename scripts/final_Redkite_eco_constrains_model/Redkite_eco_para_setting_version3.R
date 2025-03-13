@@ -19,7 +19,7 @@
 # The age of a new nest is randomly set.
 
 # Dependencies ----
-source("./scripts/new_Redkite_eco_constrains/Time_Dim_Turbo_Region_para_setting_for_version3.R") # load timesteps, dim and Turbine
+source("./scripts/final_Redkite_eco_constrains_model/Time_Dim_Turbo_Region_para_setting_version3.R") # load timesteps, dim and Turbine
 
 library(ggplot2)
 library(abind)
@@ -79,7 +79,8 @@ dimnames(kites) <- list(
   y_dim = NULL,
   timesteps = NULL,
   type = c("nest", "juv", "abundance", "age_lonely", "age_nest", "killed_move", "killed_build")
-)mes(kites) <- list(NULL, NULL, NULL, c("nest", "juv", "abundance", "age_lonely", "age_nest", "killed_move", "killed_build"))
+)
+dimnames(kites) <- list(NULL, NULL, NULL, c("nest", "juv", "abundance", "age_lonely", "age_nest", "killed_move", "killed_build"))
 
 # ----------------------------------------------------------------
 # Initial Placement of Kites
