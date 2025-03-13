@@ -1,3 +1,11 @@
+# Modeling the Interaction of Red Kites (Milvus milvus) and Wind Turbines in a Hypothetical Landscape Scenario
+## Abstract
+The expansion of wind energy presents challenges for wildlife conservation, particularly for the red kite (Milvus milvus), which is at risk due to wind turbine construction. However, wind energy is essential for renewable power. To find a balance between red kite survival and wind turbine construction, we examine how turbines impact red kite populations.
+We developed a process-based model (R-version 4.4.2) based on the Ricker function. Key ecological processes for red kite population dynamics included reproduction, dispersal, and lifespan. The simulation used a 100×100 grid, with each cell representing 1 km² of a hypothetical landscape with fixed obstacles (buildings) and turbines. Buildings had a 3×3 buffer restricting turbine placement, while turbines had a 6×6 "deadly zone" causing kite mortality. The initial placement of all elements (50 buildings, 10 turbines, 3 red kite pairs per 100 km², and 10% lonely kites) was randomized within valid grid cells.
+The simulation included random placement of up to 10 turbines, as well as moving adult lonely kites, nests, and juveniles. Each nest produced one juvenile per timestep. Kites matured at age three and then dispersed randomly within 20 km. If two mature lonely kites met, they formed a fixed nest. Kites entering a turbine buffer zone or struck by new turbines were considered dead. Nest presence, juvenile numbers, abundance, age distribution, and mortality rates were tracked each timestep.
+Over five timesteps, the simulation showed that the population continued growing despite more turbines but plateaued. Nests and juveniles declined while lonely kites increased. We identified 25 turbines as a potential critical threshold, though this result is sensitive to movement dynamics. Longer-term simulations are needed to draw more definitive conclusions.
+The model provides a first framework for evaluating the impact of wind energy on red kite populations and has potential for further application in real-world scenarios.
+
 ## Wind Turbine and Red Kite Simulation Overview
 
 This project simulates the interaction between wind turbine placement and red 
@@ -84,20 +92,21 @@ Dependencies:
 
 How to Run:
 
+all scripts in `final_Redkite_eco_constrains_model`
 Note that all files can be run seperately, to initialze the simulation step by step.
-Alternatively only the `new_visualize_model.R` script needs to be run, as the pother
+Alternatively only the `visualize_model_version3.R` script needs to be run, as the pother
 files are sourced into the file.
 
 Parameter Setup:
-    - Run `new_Time_Dim_Turbo_Region_para_setting.R` to initialize the simulation environment 
-    - Run `new_Redkite_eco_para_setting.R to set red` kite ecological parameters and 
+    - Run `Time_Dim_Turbo_Region_para_setting_version3.R` to initialize the simulation environment 
+    - Run `Redkite_eco_para_setting_version3.R` to set red kite ecological parameters and 
       initialize the red kite population
 
 Simulation Execution:
     - Execute `model_version3.R` to run the main simulation loop.
     
 Visualization:
-    - RUn the `new_visualize_model.R` file to see the result for each timestep.
+    - Run the `visualize_model_version3.R` file to see the result for each timestep.
     - Use the provided script to generate maps of each timestep and scatterplots 
       summarizing turbine, red kite, and mortality dynamics.
 
