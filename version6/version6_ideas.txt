@@ -1,0 +1,11 @@
+# Version6 - ideas
+# --------------------------------------
+
+- check age distribution -> why die so many at one point?
+
+- integrate new nest building rate (eg. min 20% of lonely kites have to build a new nest)
+
+- check moving / new nest building
+
+- integrate breeding option of 1-2 offsprings
+

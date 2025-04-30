@@ -1,0 +1,28 @@
+notes: model_version6
+# ---------------------
+# weitere Ideen
+1. Turbine bug fixen / Model umgestalten, dass maximale Turbinen zahl am Ende ausgegeben wird
+2. turbinen placment erst wenn Population stabil ist
+
+(3. Bewegungsmuster, abhängig von male/female)
+((4. räumliche Verbreitung, Acker, Siedlungen, Wald))
+(((5. dann überlegen wie wir es räumlich explizit machen - BaWü)))
+# ---------------------
+
+#Turbinen Model
+- turb_neu_perc, rauslassen?, aktuell bei 0.8
+- turb_neu_max wird schon bei timestep 2 erreich (gerade wird es so betrachtet, das dass die max total nr an turbinen ist) - es ist gerade keine pot neubildungsrate pro timestep
+- check wie parameter in turbinen model eingebaut sind?
+- check Turbinen Model - wieso wird nur eine pro timestep gesetzt?
+
+#Redkite Model
+- spat_palcement, prüfen ob das funktioniert
+- nur Code-Kosmetik in Model Skript nur "Red_kite_pop_func" laufen lassen 
+
+# ---------------------
+# Drei Fragestellungen
+Wie viele Turbinen können max gebaut werden:
+- "ökologisch" - Redkite in gleichem Bestand nimmt zu
+- "ökonomisch" - Redkite in min. Bestandsdichte (gerade so überlebend)
+- "öko-ökonomische" - Redkite in gleichem Bestand erhalten / nur minimal abnehmend
+# ---------------------
