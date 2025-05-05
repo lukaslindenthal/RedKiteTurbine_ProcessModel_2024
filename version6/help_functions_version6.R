@@ -240,8 +240,8 @@ spat_visual <- function(folder_name, time, x_dim, y_dim,
     df$category[df$nest == TRUE] <- "Redkite nest (2 adults)"
     df$category[df$juv_kite == TRUE] <- "Redkite nest (2 adults + 1 juv)"
     df$category[df$lonely_kite == TRUE] <- "Redkite lonely adult"
-    df$category[df$killed_move == TRUE] <- "Redkite killed flying in turb"
-    df$category[df$killed_build == TRUE] <- "Redkite killed by turbine const."
+    df$category[df$killed_move == TRUE] <- "Redkite killed flying in Turb."
+    df$category[df$killed_build == TRUE] <- "Redkite killed by Turb. const."
     
     # # Construct the title with dynamic data
     tit <- paste("Simulation at Timestep =", t,
@@ -264,8 +264,8 @@ spat_visual <- function(folder_name, time, x_dim, y_dim,
                                    "Redkite nest (2 adults)" = "green4",
                                    "Redkite nest (2 adults + 1 juv)" = "green",
                                    "Redkite lonely adult" = "yellow",
-                                   "Redkite killed flying in turb" = "red",
-                                   "Redkite killed by turbine const." = "darkred",
+                                   "Redkite killed flying in Turb." = "red",
+                                   "Redkite killed by Turb. const." = "darkred",
                                    "Background" = "grey95"),
                         name = "Legend") +
       labs(title = tit, x = "X", y = "Y") +
