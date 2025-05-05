@@ -3,6 +3,7 @@
 # ----------------------------------------------------
 
 library(dplyr)
+library(ggplot2)
 
 # dispersal ----
 func_dispersal <- function(dis_num) {
@@ -178,3 +179,93 @@ comp_plot <- function(abund, wo_dis, turbine, name, addmain, commi){
          col = c("green" ,"darkgreen", "blue", "red", "pink", "magenta", "darkgrey","black"), pch = 16, pt.cex = 1,cex = 1)
   dev.off()
 }
+
+# spatial visualisation ----
+spat_visual <- function(folder_name, time, x_dim, y_dim, 
+                        results_region, results_buffer, results_building_buffer, results_turbine,
+                        results_kites) {
+  folder_path <- paste("plots/", folder_name, sep = "")
+  
+  if (!dir.exists(folder_path)) { # check if folder isnt exiting
+    dir.create(folder_path, recursive = TRUE)} else {
+      stop(paste("!",folder_path, "already exists"))
+    }
+  
+  for(t in time) { 
+    # Combining data into a df for plotting
+    df <- data.frame(
+      x = rep(1:x_dim, each = y_dim),
+      y = rep(1:y_dim, times = x_dim),
+      
+      # Region / landscape
+      region = as.vector(results_region[, , t]),
+      buffer = as.vector(results_buffer[, , t]), 
+      building_buffer = as.vector(results_building_buffer[, , t]),
+      
+      # Subjects
+      turb = as.vector(results_turbine[, , t]),
+      # kite = as.vector(results_kites[, , t, "loc"]),
+      nest = as.vector(results_kites[, , t, "loc"] == 2),
+      juv_kite = as.vector(results_kites[, , t, "loc"] > 2),
+      lonely_kite = as.vector(results_kites[, , t, "loc"] == 1),
+      
+      # killed kites
+      killed_move = as.vector(results_kites[, , t, "killed_move"] > 0),
+      killed_build = as.vector(results_kites[, , t, "killed_build"] > 0)
+      
+    )
+    
+    # Assign categories for different states and objects in the grid
+    df$category <- "Background"
+    df$category[df$building_buffer == TRUE] <- "Building Buffer"
+    df$category[df$region == TRUE] <- "Region / Building"
+    df$category[df$buffer == TRUE] <- "T-Buffer"
+    df$category[df$turb == TRUE] <- "Turbine"
+    
+    df$category[df$nest == TRUE] <- "Redkite nest (2 adults)"
+    df$category[df$juv_kite == TRUE] <- "Redkite nest (2 adults + 1 juv)"
+    df$category[df$lonely_kite == TRUE] <- "Redkite lonely adult"
+    df$category[df$killed_move == TRUE] <- "Redkite killed flying in turb"
+    df$category[df$killed_build == TRUE] <- "Redkite killed by turbine const."
+    df$category[df$killed_build == TRUE] <- "Redkite killed by turbine construction"
+    
+    
+    # # Construct the title with dynamic data
+    tit <- paste("Simulation at Timestep =", t,
+                 "\n T = ", sum(results_turbine[, , t]),
+                 ", \n total K_abund = ", sum(results_kites[, , t, "loc"]),
+                 
+                 "\n\n K_nest = ", sum(results_kites[, , t, "loc"] >= 2),
+                 ", K_lonely = ", sum(results_kites[, , t, "loc"] == 1),
+                 ", K_juv=", sum(results_kites[, , t, "loc"] > 2),
+                 ", \n K_killed_movement =", sum(results_kites[, , t, "killed_move"] > 0),
+                 ", K_killed_construction =", sum(results_kites[, , t, "killed_build"] > 0))
+    
+    # Create the plot
+    p <- ggplot(df, aes(x = x, y = y)) +
+      geom_tile(aes(fill = category), show.legend = TRUE) +
+      scale_fill_manual(values = c("Turbine" = "black",
+                                   "T-Buffer" = "orange2",
+                                   "Building Buffer" = "orange",
+                                   "Region / Building" = "blue",
+                                   "Redkite nest (2 adults)" = "green4",
+                                   "Redkite nest (2 adults + 1 juv)" = "green",
+                                   "Redkite lonely adult" = "yellow",
+                                   "Redkite killed flying in turb" = "red",
+                                   "Redkite killed by turbine const." = "darkred",
+                                   "Background" = "grey95"),
+                        name = "Legend") +
+      labs(title = tit, x = "X", y = "Y") +
+      theme(
+        panel.background = element_rect(fill = "white"),
+        plot.background = element_rect(fill = "white")
+      )
+    
+    print(p)
+    
+    # Save the plot
+    name <- paste("./plots/", folder_name, "/timestep_", t, ".png" , sep ="")
+    ggsave(name, plot = p)
+  }
+}
+

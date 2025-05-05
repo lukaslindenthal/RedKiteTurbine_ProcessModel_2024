@@ -2,7 +2,7 @@
 # Turbine and Red Kite Model Simulation and Visualisation ----
 # ----------------------------------------------------------------
 # This script simulates the interaction between wind turbine placement and red 
-# kite dynamics over a series of 5 timesteps, each representing one year.
+# kite dynamics over a series of timesteps, each representing one year.
 
 # Key Features and Assumptions the model is based upon:
 
@@ -122,7 +122,7 @@ results_buffer <- model_simualtion$buffer
 
 ## Red Kites
 results_kites_metric <- model_simualtion$kites_metric
-results_kites <- model_simualtion$kites
+results_kites <- model_simualtion$kites # type = c("loc", "killed_move", "killed_build")
 results_kites_abund <- model_simualtion$kites_abund
 
 # ----------------------------------------------------------------
@@ -153,3 +153,14 @@ commi <- "new_nest_dist = 1 \ncarrying_capacity = [4 pairs / 100km2]\n
 
 comp_plot(abund, wo_dis, turbine, name, addmain, commi)
 source("./help_functions_version6.R")
+
+
+# ----------------------------------------------------------------
+# SPATIAL VISUALISATION ----
+# ----------------------------------------------------------------
+time <- c(1, 5, 10, 15,20, 25)
+folder_name <- "timesteps_try1"
+
+spat_visual(folder_name, time, x_dim, y_dim,
+            results_region, results_buffer, results_building_buffer, results_turbine,
+            results_kites) 
