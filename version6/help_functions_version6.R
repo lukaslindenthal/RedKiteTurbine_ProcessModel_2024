@@ -86,7 +86,14 @@ spat_palcement <- function(df, ar, timestep, layer){
 }
 
 # plot population ----
-pop_func_plot <- function(abund, turbine, name, addmain, commi){
+pop_func_plot <- function(folder_name, 
+                          abund, turbine, name, addmain, commi){
+  folder_path <- paste("plots/", folder_name, sep = "")
+  
+  if (!dir.exists(folder_path)) { # check if folder isnt exiting
+    dir.create(folder_path, recursive = TRUE)} else {
+      print(paste("!",folder_path, "already exists"))
+    }
   
   abund[is.na(abund)] <- 0
   
@@ -106,7 +113,7 @@ pop_func_plot <- function(abund, turbine, name, addmain, commi){
     n_turb[t] <- sum(turbine[,,t])
   }
   
-  png(paste("./plots/",name,".png"), width = 800, height = 600)
+  png(paste("./plots/", folder_name, "/", name,".png", sep =""), width = 800, height = 600)
   plot(time, total_abund, type = "b", col = "green", pch = 16,
        xlab = "Timestep (years)", ylab = "Count",
        main = paste("Redkites Over Time\n", addmain),
@@ -133,7 +140,15 @@ pop_func_plot <- function(abund, turbine, name, addmain, commi){
 }
 
 # comparison Plot ----
-comp_plot <- function(abund, wo_dis, turbine, name, addmain, commi){
+comp_plot <- function(folder_name, 
+                      abund, wo_dis, turbine, name, addmain, commi){
+  
+  folder_path <- paste("plots/", folder_name, sep = "")
+  
+  if (!dir.exists(folder_path)) { # check if folder isnt exiting
+    dir.create(folder_path, recursive = TRUE)} else {
+      print(paste("!",folder_path, "already exists"))
+    }
   abund[is.na(abund)] <- 0
   
   # Create summary vectors for each timestep
@@ -152,7 +167,7 @@ comp_plot <- function(abund, wo_dis, turbine, name, addmain, commi){
     n_turb[t] <- sum(turbine[,,t])
   }
   
-  png(paste("./plots/",name,".png"), width = 800, height = 600)
+  png(paste("./plots/", folder_name, "/",name,".png" , sep =""), width = 800, height = 600)
   plot(time, wo_dis, type = "b", col = "darkgreen", pch = 16,
        xlab = "Timestep (years)", ylab = "Count",
        main = paste("Redkites Over Time\n", addmain),
@@ -188,7 +203,7 @@ spat_visual <- function(folder_name, time, x_dim, y_dim,
   
   if (!dir.exists(folder_path)) { # check if folder isnt exiting
     dir.create(folder_path, recursive = TRUE)} else {
-      stop(paste("!",folder_path, "already exists"))
+      print(paste("!",folder_path, "already exists"))
     }
   
   for(t in time) { 
@@ -227,8 +242,6 @@ spat_visual <- function(folder_name, time, x_dim, y_dim,
     df$category[df$lonely_kite == TRUE] <- "Redkite lonely adult"
     df$category[df$killed_move == TRUE] <- "Redkite killed flying in turb"
     df$category[df$killed_build == TRUE] <- "Redkite killed by turbine const."
-    df$category[df$killed_build == TRUE] <- "Redkite killed by turbine construction"
-    
     
     # # Construct the title with dynamic data
     tit <- paste("Simulation at Timestep =", t,

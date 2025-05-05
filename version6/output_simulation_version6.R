@@ -26,13 +26,14 @@
 # Authors: Neele Haß & Lukas Lindenthal
 # ----------------------------------------------------------------
 
+folder_name <- "timesteps_try2_time30"
 source("./help_functions_version6.R")
 
 # ----------------------------------------------------------------
 # Simulation Set-up -----------------------------------------
 # ----------------------------------------------------------------
 ## Dim and timesteps -----
-timesteps <- 25    # Number of timesteps in the simulation
+timesteps <- 30    # Number of timesteps in the simulation
 resolution <- 1 * 1 # set resoltuion [km2] 
 x_dim <- 100           # Grid width (x-axis)
 y_dim <- 100           # Grid height (y-axis)
@@ -49,8 +50,8 @@ buffer_zone <- c(-2, -1, 0, 1, 2)
 
 # initial Turbine set up
 n_turb_1 <- 20                                  # Number of initial turbines
-turb_neu_max <- 100     # Max total nr of turbines
-turb_neu_perc <- 0.05   # Percentage of existing turbines for new construction
+turb_neu_max <- 50    # Max total nr of turbines
+turb_neu_perc <- 0.8  # Percentage of existing turbines for new construction
 
 # ----------------------------------------------------------------
 # Red Kite Parameters
@@ -131,36 +132,38 @@ results_kites_abund <- model_simualtion$kites_abund
 # recent set up: init_turb = 20, turb_neu_max = 50, turb_neu_perc = 0.8
 
 # save plot
-pop_func_plot(results_kites_abund, results_turbine, "try3_3model6_disturb_20_max50_turb", 
-              addmain = "init_turb = 20, turb_neu_max = 100, turb_neu_perc = 0.8", 
+pop_func_plot(folder_name, 
+              results_kites_abund, results_turbine, "model6_disturb_20_max50_turb", 
+              addmain = "init_turb = 20, turb_neu_max = 50, turb_neu_perc = 0.8", 
               commi = "new_nest_dist = 1 \n carrying_capacity = [4 pairs / 100km2]")
+
+# ----------------------------------------------------------------
+# SPATIAL VISUALISATION ----
+# ----------------------------------------------------------------
+# time <- c(1, 5, 10, 15, 20, 25, 30)
+time <- 1:timesteps
+
+spat_visual(folder_name, time, x_dim, y_dim,
+            results_region, results_buffer, results_building_buffer, results_turbine,
+            results_kites) 
 
 # ----------------------------------------------------------------
 # COMPARISON Red Kite with and without disturbance ----
 # ----------------------------------------------------------------
 
-# ! get Results from Red kite model without disturbance
+# ! get Results from Red kite model without disturbance "check_Red_kite_model_version6.R"
 
 # plot in COMPARISON
 abund <- results_kites_abund
-wo_dis <- test_wodis_kites_abund$total_abund
+wo_dis <- test_wodis_kites_abund$total_abund # run "check_Red_kite_model_version6.R
 turbine <- results_turbine
-name <- "final2_comp_3model6_turb_20_max50"
+name <- "comp_3model6_turb_20_max50"
 addmain <- "comparision without and with disturbance"
 commi <- "new_nest_dist = 1 \ncarrying_capacity = [4 pairs / 100km2]\n 
 \ninit_turb = 20, \nturb_neu_max = 50, \nturb_neu_perc = 0.8\n
 \n 3_model_verison6"
 
-comp_plot(abund, wo_dis, turbine, name, addmain, commi)
-source("./help_functions_version6.R")
+comp_plot(folder_name,
+          abund, wo_dis, turbine, name, addmain, commi)
 
 
-# ----------------------------------------------------------------
-# SPATIAL VISUALISATION ----
-# ----------------------------------------------------------------
-time <- c(1, 5, 10, 15,20, 25)
-folder_name <- "timesteps_try1"
-
-spat_visual(folder_name, time, x_dim, y_dim,
-            results_region, results_buffer, results_building_buffer, results_turbine,
-            results_kites) 
